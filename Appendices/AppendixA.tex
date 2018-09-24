@@ -1,0 +1,58 @@
+\chapter{Extra Figures}
+\label{Appen:A}
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}[b]{1.1\textwidth}
+		%\includegraphics[width=\textwidth]{img/mean_x_pred_result.png}%
+		\caption{\emph{x} \ac{MSE} and \ac{MAE} plots over 100 epochs}
+	\end{subfigure}
+\end{figure}
+\begin{figure}\ContinuedFloat
+	\begin{subfigure}[b]{1.1\textwidth}
+		%\includegraphics[width=\textwidth]{img/mean_y_pred_result.png}%
+		\caption{\emph{y} \ac{MSE} and \ac{MAE} plots over 100 epochs}
+		\label{fig:cross_mean_y}
+	\end{subfigure}
+\end{figure}
+\begin{figure}\ContinuedFloat
+	\begin{subfigure}[b]{1.1\textwidth}
+		%\includegraphics[width=\textwidth]{img/mean_yaw_pred_result.png}%
+		\caption{\emph{yaw} \ac{MSE} and \ac{MAE} plots over 100 epochs}
+		\label{fig:cross_mean_yaw}
+	\end{subfigure}
+\end{figure}
+\begin{figure}\ContinuedFloat
+	\begin{subfigure}[b]{1.1\textwidth}
+		%\includegraphics[width=\textwidth]{img/mean_z_pred_result.png}%
+		\caption{\emph{z} \ac{MSE} and \ac{MAE} plots over 100 epochs}
+		\label{fig:cross_mean_z}
+	\end{subfigure}
+	\caption{Graphs of the average loss and \ac{MSE} for the different target variables. In each graph lines correspond to a specific metric for a specific variable. The line's color indicate the set predicted blue = train, orange = validation, red dashe = dummy regressor on validation.}
+	\label{fig:cross_plots}
+\end{figure}
+\begin{figure}
+	\centering
+	\begin{subfigure}[b]{1.1\textwidth}
+		%\includegraphics[width=\textwidth]{img/x_pred100-n.png}%
+		\caption{\emph{x}}
+	\end{subfigure}
+	\begin{subfigure}[b]{1.1\textwidth}
+		%\includegraphics[width=\textwidth]{img/y_pred100-n.png}%
+		\caption{\emph{y}}
+		\label{fig:y_pred100-n}
+	\end{subfigure}
+\end{figure}
+\begin{figure}\ContinuedFloat
+	\begin{subfigure}[b]{1.1\textwidth}
+		%\includegraphics[width=\textwidth]{img/yaw_pred100-n.png}%
+		\caption{\emph{yaw}}
+		\label{fig:yaw_pred100-n}
+	\end{subfigure}
+	\begin{subfigure}[b]{1.1\textwidth}
+		%\includegraphics[width=\textwidth]{img/z_pred100-n.png}%
+		\caption{\emph{z}}
+		\label{fig:z_pred100-n}
+	\end{subfigure}
+	\caption{A set of figures with 4 plots of a fold one figure for each variable. These graphs are described in Section \ref{sec:crosseval}}
+	\label{fig:pred100-n}
+\end{figure}

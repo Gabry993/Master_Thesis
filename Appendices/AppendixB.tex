@@ -1,0 +1,228 @@
+\chapter{Other Listings}
+\label{Appen:B}
+Other listings excluded from the text for better readability.
+\subsection*{\texttt{find\_nearest} method}
+\begin{lstlisting}[caption={Find Nearest function},label={lst:nearest},language=Python]
+def find_nearest(array, value):
+	"""
+		find nearest value in array
+	Args:
+		array: array of values
+	value: reference value
+	
+	Returns:
+		min index of nearest array's element to value
+	"""
+	return (np.abs(array - value)).argmin()
+\end{lstlisting}
+\subsection*{\texttt{change\_frame\_reference} method}
+\begin{lstlisting}[caption={Change frame of reference},label={lst:changeframe},language=Python]
+def change_frame_reference(pose_bebop, pose_head):
+	"""
+		Change frame of reference of pose head from World to bebop.
+	
+	Args:
+		pose_bebop: pose of the bebop
+		pose_head: pose of the head
+	
+	Returns:
+		the new pose for head:
+			bebop
+				T
+				head
+	"""
+	position_bebop = pose_bebop[['b_pos_x', 'b_pos_y', 'b_pos_z']].values
+	quaternion_bebop = pose_bebop[['b_rot_w', 'b_rot_x', 'b_rot_y', 'b_rot_z']].values
+	position_head = pose_head[['h_pos_x', 'h_pos_y', 'h_pos_z']].values
+	quaternion_head = pose_head[['h_rot_w', 'h_rot_x', 'h_rot_y', 'h_rot_z']].values
+	w_t_b = rospose2homogmat(position_bebop, quaternion_bebop)
+	w_t_h = rospose2homogmat(position_head, quaternion_head)
+	b_t_w = np.linalg.inv(w_t_b)
+	b_t_h = np.matmul(b_t_w, w_t_h)
+	
+	return b_t_h
+\end{lstlisting}
+\subsection*{\texttt{VideoCreator} Class}
+\begin{lstlisting}[caption={Video creator class},label={lst:videocreator},language=Python]
+class VideoCreator:
+	def __init__(self, b_orientation, distances, b_position, frame_list, h_orientation, h_position, delta_z, f, title="test.avi"):
+		"""
+			Initializer for the class
+		Args:
+			distances: list of distance user-drone
+			b_orientation: bebop orientation array
+			b_position: bebop position array
+			frame_list: camera frame list
+			h_orientation: head orientation array
+			h_position: head orientation array
+			delta_z: height difference list
+			f: bag file name
+			title: video file name
+		"""
+		self.fps = 30
+		self.f = f
+		self.video_writer = cv2.VideoWriter(title, cv2.VideoWriter_fourcc(*'XVID'), self.fps, (640, 480))
+		self.b_orientation = b_orientation
+		self.b_position = b_position
+		self.frame_list = frame_list
+		self.h_orientation = h_orientation
+		self.h_position = h_position
+		self.distances = distances
+		self.delta_z = delta_z
+	
+	def plotting_function(self, i):
+		"""
+			Given an index compose the frame for the video.
+		Args:
+			i: frame number
+		"""
+		fig = plt.figure()
+		fig.suptitle("Frame: " + str(i), fontsize=12)
+		axll = fig.add_subplot(2, 2, 1)
+		axl = fig.add_subplot(2, 2, 2)
+		axc = fig.add_subplot(2, 2, 3)
+		axr = fig.add_subplot(2, 2, 4)
+		canvas = FigureCanvas(fig)
+		
+		# Central image: here we add the camera feed to the video
+		img = Image.open(io.BytesIO(self.frame_list[i]))
+		raw_frame = list(img.getdata())
+		frame = []
+		for b in raw_frame:
+		frame.append(b)
+		reshaped_fr = np.reshape(np.array(frame, dtype=np.int64), (480, 856, 3))
+		reshaped_fr = reshaped_fr.astype(np.uint8)
+		axc.imshow(reshaped_fr)
+		axc.set_axis_off()
+		
+		# RIGHT PLOT: here we create the right plot that represent the position and heading of the bebop and head
+		axr.axis([-2.4, 2.4, -2.4, 2.4], 'equals')
+		h_theta = quat_to_eul(self.h_orientation[i])[2]
+		b_theta = quat_to_eul(self.b_orientation[i])[2]
+		arrow_length = 0.3
+		spacing = 1.2
+		minor_locator = MultipleLocator(spacing)
+		# Set minor tick locations.
+		axr.yaxis.set_minor_locator(minor_locator)
+		axr.xaxis.set_minor_locator(minor_locator)
+		# Set grid to use minor tick locations.
+		axr.grid(which='minor')
+		axr.plot(self.b_position[i].x, self.b_position[i].y, "ro", self.h_position[i].x, self.h_position[i].y, "go")
+		axr.arrow(self.h_position[i].x, self.h_position[i].y, arrow_length * np.cos(h_theta), arrow_length * np.sin(h_theta), head_width=0.05, head_length=0.1, fc='g', ec='g')
+		axr.arrow(self.b_position[i].x, self.b_position[i].y, arrow_length * np.cos(b_theta), arrow_length * np.sin(b_theta), head_width=0.05, head_length=0.1, fc='r', ec='r')
+		
+		# LEFT PLOT: here we represent the distance on the y axis and the heading correction for the drone in degrees on the x-axis
+		r_t_h = matrix_method(self.b_position[i], self.b_orientation[i], self.h_position[i], self.h_orientation[i])
+		horizontal_angle = -math.degrees(math.atan2(r_t_h[1, 3], r_t_h[0, 3]))
+		
+		value_angle_axis = 45
+		axl.set_xlim(-value_angle_axis, value_angle_axis)
+		axl.set_ylim(0.1, 3)
+		axl.set_xlabel('Angle y')
+		axl.set_ylabel('Distance')
+		axl.plot(horizontal_angle, self.distances[i], 'go')
+		
+		axll.set_xlim(-value_angle_axis, value_angle_axis)
+		axll.set_ylim(-1, 1)
+		axll.set_xlabel('Angle y')
+		axll.set_ylabel('Delta z')
+		axll.plot(horizontal_angle, self.delta_z[i], 'go')
+		# Drawing the plot
+		canvas.draw()
+		
+		# some additional informations as arrows
+		width, height = (fig.get_size_inches() * fig.get_dpi()).astype(dtype='int32')
+		img = np.fromstring(canvas.tostring_rgb(), dtype='uint8').reshape(height, width, 3)
+		img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+		pt1 = (275, 40)
+		pt2 = (375, 40)
+		if horizontal_angle >= 0:
+			cv2.arrowedLine(img, pt1, pt2, (0, 0, 255), 3)
+		else:
+			cv2.arrowedLine(img, pt2, pt1, (0, 0, 255), 3)
+		
+		pt3 = (25, 175)
+		pt4 = (25, 225)
+		if self.distances[i] < 1.5:
+			cv2.arrowedLine(img, pt3, pt4, (0, 255, 0), 3)
+		else:
+			cv2.arrowedLine(img, pt4, pt3, (0, 255, 0), 3)
+		
+		self.video_writer.write(img)
+		plt.close(fig)
+	
+	def video_plot_creator(self):
+		"""
+			calls frame composers for every frame
+			complete video creation
+		"""
+		max_ = len(self.frame_list)
+		for i in tqdm.tqdm(range(0, max_)):
+			self.plotting_function(i)
+		self.video_writer.release()
+		cv2.destroyAllWindows()
+\end{lstlisting}
+\subsection*{\texttt{keras\_train} Script}
+%\lstinputlisting[caption={\texttt{keras\_train} Script},label={lst:kerastrain},language=Python]{code/kerastrain.py}
+\subsection*{\texttt{keras\_crossvalidation} Script}
+%\lstinputlisting[caption={\texttt{keras\_crossvalidation} Script},label={lst:kerascross},language=Python]{code/kerascrossvalidation.py}
+\subsection*{\texttt{model\_creator} Script}
+%\lstinputlisting[caption={\texttt{model\_creator} Script},label={lst:modelcreator},language=Python]{code/modelcreator.py}
+\subsection*{\texttt{bag\_to\_pickle} Method}
+\begin{lstlisting}[caption={Extract that shows the method \text{bag\_to\_pickle}},label={lst:bagtopickle},language=Python]
+def bag_to_pickle(f):
+"""
+Core method used to transforms and saves a bag file into a .pickle dataset file
+Args:
+f: file name e.g. "7.bag"
+"""
+path = bag_file_path[f[:-4]]
+print("\nreading bag: " + str(f))
+datacr = DatasetCreator()
+with rosbag.Bag(path + f) as bag:
+bag_df_dict = get_bag_data_pandas(bag)
+data_vec = processing(bag_df_dict=bag_df_dict, data_id=f[:-4], f=f)
+datacr.generate_data(data_vec=data_vec)
+datacr.save_dataset(flag_train="cross", title=f[:-4] + ".pickle")
+
+print("\nCompleted pickle " + str(f[:-4]))
+\end{lstlisting}
+\subsection*{\texttt{processing} Method}
+\begin{lstlisting}[caption={\texttt{processing}} method,label={lst:processing},language=Python]
+def processing(bag_df_dict, data_id, f):
+"""
+Process data from dictionary bag_df_dict into a data vector
+Args:
+bag_df_dict: dictionary of Pandas dataframes
+data_id: id of the bag file processed
+f: bag file name, used as key for dictionary
+Returns:
+data vector: vector of tutples (image, (targe_x, target_y, target_z, target_relative_yaw)
+"""
+camera_t = bag_df_dict["camera_df"].index.values
+bebop_t = bag_df_dict["bebop_df"].index.values
+head_t = bag_df_dict["head_df"].index.values
+data_vec = []
+max_ = bag_end_cut[f[:-4]]
+min_ = bag_start_cut[f[:-4]]
+for i in tqdm.tqdm(range(min_, max_), desc="processing data " + str(data_id)):
+b_id = find_nearest(bebop_t, camera_t[i])
+h_id = find_nearest(head_t, camera_t[i])
+head_pose = bag_df_dict["head_df"].iloc[h_id]
+bebop_pose = bag_df_dict["bebop_df"].iloc[b_id]
+img = bag_df_dict["camera_df"].iloc[i].values[0]
+b_t_h = change_frame_reference(bebop_pose, head_pose)
+quaternion_bebop = bebop_pose[['b_rot_x', 'b_rot_y', 'b_rot_z', 'b_rot_w']].values
+quaternion_head = head_pose[['h_rot_x', 'h_rot_y', 'h_rot_z', 'h_rot_w']].values
+_, _, head_yaw = quat_to_eul(quaternion_head)
+_, _, bebop_yaw = quat_to_eul(quaternion_bebop)
+relative_yaw = (head_yaw - bebop_yaw - np.pi)
+if relative_yaw < -np.pi:
+relative_yaw += 2 * np.pi
+target_position = b_t_h[:-1, -1:].T[0]
+target = (target_position[0], target_position[1], target_position[2], relative_yaw)
+data_vec.append((img, target))
+return data_vec
+\end{lstlisting}
+\subsection*{\texttt{dumb\_regressor} Script}
+%\lstinputlisting[caption={\texttt{dumb\_regressor} Script},label={lst:dumbreg},language=Python]{code/dumbregressor.py}
