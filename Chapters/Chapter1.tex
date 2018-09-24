@@ -8,7 +8,7 @@ Our final goal is to be able to define the direction of a laser ray mounted on t
 For those purposes, we have built two different turrets. Since the model of the first one is slightly simpler than the second, we will start describing the former, which turns out to be helpful to understand the latter. We will focus on the case in which the laser must be projected on the ground.
 
 \subsection{First Model}
-First, figure \ref{fig:firstModel} helps us understand how we have shaped the model to match the physical structure of the turret. We have three reference frames. The \textbf{base\_link} is fixed and is the one in which we define the coordinates of the projected point. \textbf{pan\_link} and \textbf{tilt\_link} are the frames used to represent our angles.
+First, figure \ref{fig:firstModel} helps us understand how we have shaped the model to match the physical structure of the turret. We have three reference frames. The \textbf{base\_link} is fixed and is the one in which we define the coordinates of the projected point. \textbf{pan\_link} and \textbf{tilt\_link} are the frames used to represent our revolute joints.
 \textbf{H} is the height of the turret, which is known. Note that the convention used for the frame is the following:
 \begin{itemize}
     \item red is the x axis;
