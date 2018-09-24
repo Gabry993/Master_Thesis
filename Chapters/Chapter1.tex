@@ -8,19 +8,44 @@ Our final goal is to be able to define the direction of a laser ray mounted on t
 For those purposes, we have built two different turrets. Since the model of the first one is slightly simpler than the second, we will start describing the former, which turns out to be helpful to understand the latter. We will focus on the case in which the laser must be projected on the ground.
 
 \subsection{First Model}
-First, figure \ref{fig:firstModel} helps us understand how we have shaped the model to match the physical structure of the turret. We have three reference frames. The \textbf{base\_link} is fixed and is the one in which we define the coordinates of the projected point. \textbf{pan\_link} and \textbf{tilt\_link} are the frames used to represent our angles.
+First, figure \ref{fig:firstModelRefFrame} helps us understand how we have shaped the model to match the physical structure of the turret. We have three reference frames. The \textbf{base\_frame} is fixed and is the one in which we define the coordinates of the projected point. \textbf{pan\_frame} and \textbf{tilt\_frame} are the frames used to represent our revolute joints.
 \textbf{H} is the height of the turret, which is known. Note that the convention used for the frame is the following:
 \begin{itemize}
     \item red is the x axis;
     \item green is the y axis;
     \item blue is the z axis.
 \end{itemize}
-Thus, we consider the laser ray to be a prolongation of the x axis of the \textbf{tilt\_link}.
+Thus, we consider the laser ray to be a prolongation of the x axis of the \textbf{tilt\_frame}. \\
+Figure \ref{fig:firstModelPanTilt} shows what we want to be able to do: given the \textit{x}, \textit{y} and \textit{z} of the laser point we want to set \textbf{pan} and \textbf{tilt} angles accordingly. In order to do so, firstly we will solve the forward kinematic, then the inverse will be easily derived.
+\subsubsection{Forward Kinematic}
+The forward kinematic should take as input our parameters (i.e. \textbf{pan} and \textbf{tilt}) and then return the coordinates of the laser projected point into \textbf{base\_frame} reference. Note that even if we can safely assume \textit{z} of the point to be zero, as we are considering the projection on the floor, we derived the equations for the general case in which \textit{z} coordinate is not fixed. \\
+As well as what is already defined in figure \ref{fig:firstModelPanTilt}, we must add:
+\begin{itemize}
+    \item \textbf{i} as the distance from the \textbf{pan\_frame} origin to the laser point
+    \item \textbf{d} as the distance from the \textbf{tilt\_frame} origin to the laser point
+\end{itemize}
+First, note that the \textbf{pan} angle does not depends on the \textit{z} coordinate, so, starting from:
+\begin{align}
+	d= \frac{H}{\cos{(tilt)}}\\
+	i= \sqrt{H^2 + d^2}
+\end{align}
+Then, we can easily obtain laser point coordinates:
+\begin{align}
+	x= i\cos{(pan)}\\
+	y= i\sin{(pan)}
+\end{align}
+Note that, since we are considering the point as on the floor, we can safely assume that \textit{z} is zero.
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{img/firstModel.png}%
-	\caption{Pan and Tilt, First Model}
-	\label{fig:firstModel}
+	\caption{First Model, Reference Frames}
+	\label{fig:firstModelRefFrame}
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/model1XY.png}%
+	\caption{First Model, Pan \& Tilt Angle}
+	\label{fig:firstModelPanTilt}
 \end{figure}
 
 \\
