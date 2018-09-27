@@ -2,9 +2,14 @@
 \label{chap:1} 
 In this chapter we describe the abstract models used to shape all the three parts of the system. (FARE QUI UN ELENCO? torretta, puntamento, kobuki)
 \section{Turret Model}
-Degree of Freedom (DoF) is the number of independent parameters that define the configuration of a mechanical system. In our case, we wanted to build a two DoF Pan \& Tilt turret. That means that our parameters are two angles. In a 3D reference system, \textbf{pan} is the horizontal angle about the upright Z axis, \textbf{tilt} is the vertical angle about the rotated Y axis. FIGURA PER MOSTRARE PAN AND TILT
+Degree of Freedom (DoF) is the number of independent parameters that define the configuration of a mechanical system. In our case, we wanted to build a two DoF Pan \& Tilt turret. That means that our parameters are two angles. In a 3D reference system, \textbf{pan} is the horizontal angle about the upright Z axis, \textbf{tilt} is the vertical angle about the rotated Y axis, as in figure \ref{fig:panTilt}.
 Our final goal is to be able to define the direction of a laser ray mounted on top of the turret, so that we can control the position of the projected laser dot on a given surface, by solving the system's inverse kinematics.\\
-
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/panTilt.png}%
+	\caption{Pan and Tilt}
+	\label{fig:panTilt}
+\end{figure}
 For those purposes, we have built two different turrets. Since the model of the first one is slightly simpler than the second, we will start describing the former, which turns out to be helpful to understand the latter. We will focus on the case in which the laser must be projected on the ground.
 
 \subsection{First Model}\label{subs:firstModel}
@@ -105,5 +110,6 @@ Finally,
 	tilt2 =& \arctan\bigg(\frac{D}{T}\bigg)\\
 	tilt =& tilt1 + tilt2
 \end{align}
-
 \\
+\section{Human Pointing Model}
+The approach we follow to model human pointing is the one used in \cite{gromov2018robot}. The head-finger model defines human pointing rays as originating at a centroid of the head and passing through the index fingertip. 
