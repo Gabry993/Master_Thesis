@@ -1,6 +1,6 @@
 \chapter{Model Specification}
 \label{chap:1} 
-In this chapter we describe the abstract models used to shape all the three parts of the system. (FARE QUI UN ELENCO? torretta, puntamento, kobuki)
+In this chapter we describe the abstract models used to shape all the three parts of the system from a geometric perspective. (FARE QUI UN ELENCO? torretta, puntamento, relloc)
 \section{Turret Model}
 Degree of Freedom (DoF) is the number of independent parameters that define the configuration of a mechanical system. In our case, we wanted to build a two DoF Pan \& Tilt turret. That means that our parameters are two angles. In a 3D reference system, \textbf{pan} is the horizontal angle about the upright Z axis, \textbf{tilt} is the vertical angle about the rotated Y axis, as in figure \ref{fig:panTilt}.
 Our final goal is to be able to define the direction of a laser ray mounted on top of the turret, so that we can control the position of the projected laser dot on a given surface, by solving the system's inverse kinematics.\\
@@ -111,5 +111,36 @@ Finally,
 	tilt =& tilt1 + tilt2
 \end{align}
 \\
-\section{Human Pointing Model}
-The approach we follow to model human pointing is the one used in \cite{gromov2018robot}. The head-finger model defines human pointing rays as originating at a centroid of the head and passing through the index fingertip. 
+\section{Human Pointing Model} \label{sec:1.2}
+The approach we follow to model human pointing is the one used in \cite{gromov2018robot}. \\
+The \emph{head-finger} model defines human pointing rays as originating at a centroid of the head and passing through the index fingertip. Figure \ref{fig:pointingModel} shows the model. \\
+The reference frame \textbf{human\_footprint} is located at the human feet with the \emph{x}-axis pointing forward, \emph{y}-axis to the left, and \emph{z}-axis pointing up. The pointing ray is a 3D half-line on which the point that the human intends to indicate lies. So, our goal is to intersect that line with the floor (i.e. the \emph{xy}-plane of \textbf{human\_footprint} frame) in order to get the point indicated by the user. To do so, we get pointing rays using orientation readings from a wearable IMU. Once we have that, we can compute the intersection of those rays with the ground as a simple \emph{line-plane} intersection, as explained in \cite{O'Rourke:1998:CGC:289380}.
+\\
+
+Consider a line \textbf{L} given by its parametric equation:
+\begin{align}
+	P(s)= P_0 +s(P_1-P_0)= P_0+s\textbf{u}
+\end{align}
+where the parameter \emph{s} is a real number and $u=P_1-P_0$ is a line direction vector. Then, given a plane \textbf{P} expressed by a point $V_0$ on it and a normal vector $\textbf{n}=(a,b,c)$, we must first check if \textbf{L} is parallel to \textbf{P} by testing if $\textbf{b}\cdot\textbf{u}=0$, which means that \textbf{u} is perpendicular to \textbf{n}. In that case, \textbf{L} and \textbf{P} are parallel and thus either never intersect or else \textbf{L} lies completely on plane \textbf{P}.\\
+If the line and the plane are not parallel, then we can compute their unique point intersection. Considering $\textbf{w} = P_0-V_0$, at the intersect point, the vector $P(s)-V_0=\textbf{w}+s\textbf{u}$ is perpendicular to \textbf{n}. This is equivalent to say that the dot product:
+\begin{align}
+	\textbf{n}\cdot(\textbf{w}+s\textbf{u})=0 \label{eq:dot}
+\end{align}
+Solving \ref{eq:dot} we obtain the intersect point $P(s_I)$:
+\begin{align}
+	s_I = \frac{\textbf{-n}\cdot\textbf{w}}{\textbf{n}\cdot\textbf{u}}=\frac{\textbf{n}\cdot(V_0-P_0)}{\textbf{n}\cdot(P_1-P_0)}=\frac{-(ax_0+by_0+cz_0+d)}{\textbf{n}\cdot\textbf{u}}
+\end{align}
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/pointingModel.png}%
+	\caption{Human Pointing Model}
+	\label{fig:pointingModel}
+\end{figure}
+\subsection{Relative Localization}
+The relative localization procedure goal is to estimate the pose of the turret's frame in the reference frame of the human. The approach we use is the one proposed in \cite{gromov2018robot}.\\
+We want to find a four-dimensional vector:
+\begin{align}
+	\rho = [t_x, t_y, t_z, \gamma_z]
+\end{align}
+where $t=[t_x, t_y, t_z]$ represent the translation, $\gamma_z$ the rotation around the \emph{z}-axis. Note that we simplify the model ignoring rotations around \emph{x}(roll) and \emph{y}-axis (pitch)  since the \emph{z}-axes of the operator and the turret are parallel being both on the same plane (i.e. the floor).\\ Finding $\rho$ will allow us to collocate the turret's frame pose (position and orientation) into the human's frame.\\
+First, we define the human frame $\{H\}$ the same way we did in section \ref{sec:1.2}. The reference frame {B} is an arbitrary fixed reference frame in which the turret reports the position of the laser projected dot (in section \ref{sec:1.1} this is the \textbf{base\_frame}). With that given, we ask the human to point at the moving laser dot and keep following it with a pointing gesture for a short period of time $\tau$; we collect the pointing rays $r_i^{\{H\}}$ in the reference frame $\{H\}$ and corresponding laser positions $P_i^\{B\}$ in the frame $\{R\}$, after which a coordinate transformation $T*$ between the two frames is estimated using an optimization procedure
