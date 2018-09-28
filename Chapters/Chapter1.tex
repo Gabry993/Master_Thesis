@@ -2,6 +2,7 @@
 \label{chap:1} 
 In this chapter we describe the abstract models used to shape all the three parts of the system from a geometric perspective. (FARE QUI UN ELENCO? torretta, puntamento, relloc)
 \section{Turret Model}
+\label{sec:1.1}
 Degree of Freedom (DoF) is the number of independent parameters that define the configuration of a mechanical system. In our case, we wanted to build a two DoF Pan \& Tilt turret. That means that our parameters are two angles. In a 3D reference system, \textbf{pan} is the horizontal angle about the upright Z axis, \textbf{tilt} is the vertical angle about the rotated Y axis, as in figure \ref{fig:panTilt}.
 Our final goal is to be able to define the direction of a laser ray mounted on top of the turret, so that we can control the position of the projected laser dot on a given surface, by solving the system's inverse kinematics.\\
 \begin{figure}
@@ -57,8 +58,8 @@ We can easily obtain laser point coordinates:
 The inverse kinematic takes as input the triple (\textit{x, y, z}) of the laser point and returns the corresponding \textbf{pan} and \textbf{tilt} angles.\\
 In addition to \ref{eq:d}, we can say that:
 \begin{align}
-    H-z =& D\by\cos(tilt)\\
-	L =& D\by\sin(tilt) \label{eq:dsin}\\
+    H-z =& D\cos(tilt)\\
+	L =& D\sin(tilt) \label{eq:dsin}\\
 	L=& \sqrt{x^2+y^2}
 \end{align}
 Thus, we have that:
@@ -106,7 +107,7 @@ Then we compute \textbf{L} and \textbf{D}:
 \end{align}
 Finally,
 \begin{align}
-	tilt1 =& \arcatn\bigg(\frac{L}{H-z}\bigg)\\
+	tilt1 =& \arctan\bigg(\frac{L}{H-z}\bigg)\\
 	tilt2 =& \arctan\bigg(\frac{D}{T}\bigg)\\
 	tilt =& tilt1 + tilt2
 \end{align}
@@ -137,10 +138,27 @@ Solving \ref{eq:dot} we obtain the intersect point $P(s_I)$:
 	\label{fig:pointingModel}
 \end{figure}
 \subsection{Relative Localization}
-The relative localization procedure goal is to estimate the pose of the turret's frame in the reference frame of the human. The approach we use is the one proposed in \cite{gromov2018robot}.\\
-We want to find a four-dimensional vector:
+The relative localization procedure goal is to estimate the pose (position and orientation) of the turret's frame in the reference frame of the human. The approach we use is the one proposed in \cite{gromov2018robot}.\\
+First, we define the human frame $\{H\}$ the same way we did in section \ref{sec:1.2}. The reference frame $\{B\}$ is an arbitrary fixed reference frame in which the turret reports the position of the laser projected dot (in section \ref{sec:1.1} this is the \textbf{base\_frame}).\\ The input of the procedure is a finite set of pairs $C$:
 \begin{align}
-	\rho = [t_x, t_y, t_z, \gamma_z]
+    C=\{(r_1^{\{H\}},P_1^{\{B\}}), \dots,(r_N^{\{H\}},P_N^{\{B\}})\}\nonumber
 \end{align}
-where $t=[t_x, t_y, t_z]$ represent the translation, $\gamma_z$ the rotation around the \emph{z}-axis. Note that we simplify the model ignoring rotations around \emph{x}(roll) and \emph{y}-axis (pitch)  since the \emph{z}-axes of the operator and the turret are parallel being both on the same plane (i.e. the floor).\\ Finding $\rho$ will allow us to collocate the turret's frame pose (position and orientation) into the human's frame.\\
-First, we define the human frame $\{H\}$ the same way we did in section \ref{sec:1.2}. The reference frame {B} is an arbitrary fixed reference frame in which the turret reports the position of the laser projected dot (in section \ref{sec:1.1} this is the \textbf{base\_frame}). With that given, we ask the human to point at the moving laser dot and keep following it with a pointing gesture for a short period of time $\tau$; we collect the pointing rays $r_i^{\{H\}}$ in the reference frame $\{H\}$ and corresponding laser positions $P_i^\{B\}$ in the frame $\{R\}$, after which a coordinate transformation $T*$ between the two frames is estimated using an optimization procedure
+where $r_i^{\{H\}}$ is a pointing ray in the reference frame $\{H\}$ and $P_i^{\{B\}}$ is the corresponding laser dot position in the frame $\{B\}$. Those pairs are built collecting user's rays while he is following the moving laser with a pointing gesture for a short period of time $\tau$.\\
+The output of the procedure is a coordinate transformation $T^*$ between the two frames, expressed as a composition of translation and rotation: 
+\begin{align}
+	\rho = [t_x, t_y, t_z, \gamma_z] \nonumber
+\end{align}
+where $t=[t_x, t_y, t_z]$ represent the translation, $\gamma_z$ the rotation around the \emph{z}-axis. Note that we simplify the model ignoring rotations around \emph{x}(roll) and \emph{y}-axis (pitch)  since the \emph{z}-axes of the user and the turret are parallel being both on the same plane (i.e. the floor).\\ Finding $\rho$ will allow us to collocate the turret's frame pose (position and orientation) into the human's frame.\\
+This coordinate transformation is obtained through an optimization procedure: given an estimate $T$ of the transformation, we can convert laser positions $P_i^{\{B\}}$ defined in the turret frame into the operator frame:
+\begin{align}
+	P_i^{\{H\}}= TP_i^{\{B\}} \nonumber
+\end{align}
+Using these points we define a new ray $q_i^{\{H\}}$ that shares the origin with $r_i^{\{H\}}$, but passes through the point $P_i^{\{H\}}$. In that way we can define an error function $\theta$ for a set of pairs $C$:
+\begin{align}
+	\theta(T,C)=\frac{1}{N}\sum_{i=1}^N\angle(r_i^{\{H\}},q_i^{\{H\}})
+\end{align}
+where $\angle(\dots$) represents the unsigned angle between the directions of two rays. So, the goal of the optimization procedure is to find the coordinate frame transformation $T^*$ between the operator frame $\{H\}$ and the laser frame $\{B\}$ that minimizes that error function:
+\begin{align}
+	T^*=\argmin_T\theta(T,C)
+\end{align}
+
