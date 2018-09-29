@@ -1,0 +1,34 @@
+\chapter{Hardware Implementation}
+\label{chap:2}
+In this chapter we describe the hardware implementation of the system. In particular, in section \ref{sec:turret12} and \ref{sec:turret64} we will focus on the two different laser turrets built, pointing out all the issues that led us to built the second one.
+\section{First Model} \label{sec:turret12}
+Figures DA AGGIUNGERE shows the first turret. As we can see, it follows the model already seen in chapter \ref{chap:1}. So, at the base we have one servo motor in charge to control the \emph{pan} angle. On its flange, a second motor is mounted with a plastic bracket on its own flange. The laser diode is then mounted in the middle of that bracket, in such a way that its direction passes through the middle of the servo shaft. So, the second servo directly controls the \emph{tilt} angle. 
+The \emph{Arduino Uno Board} and the \emph{Bioloid Bus Serial Interface} conclude our hardware list.
+\\In the next sections we analyze each parts and their uses in details.
+\subsection{Dynamixel AX-12+}
+As reported on the official website (RIFERIMENTO):\\ \virgolette{\emph{the DYNAMIXEL is a smart actuator system developed to be the exclusive connecting joints on a robot or mechanical structure. DYNAMIXELS’ are designed to be modular and daisy chained on any robot or mechanical design for powerful and flexible robotic movements. The DYNAMIXEL is a high performance actuator with a fully integrated DC (Direct Current) Motor + Reduction Gearhead + Controller + Driver + Network, all in one servo module actuator. Programmable and networkable, actuator status can be read and monitored through a data packet stream.}}\\
+To build our first turret, we exploited two \textbf{Dynamixel AX-12+} motors.
+\subsection{Motor Specification}
+The full datasheet can be found RIFERIMENTO. We are mostly interested in two specifications: 
+\begin{itemize}
+    \item \textbf{resolution}: $0.29^{\circ}$
+    \item \textbf{communication speed}: 7343bps $\sim$ 1Mbps
+\end{itemize}
+Those are the values that set the limitations for that turret, causing the issues we discuss in the next section.
+\subsection{Issues}
+Here we will only report the issues raised by the motors. Solutions are discussed in the next chapter.
+\subsubsection{Servo Resolution and Slow Speed Limit}
+Even though a resolution of $0.29^{\circ}$ could seem pretty good, that value heavily limits the performance of the turret. As a matter of fact, in our system, the joint will be often asked to do very small movement and, thus, drawing tiny angles. Moreover, the motor is not able to move with too much low speed values. That issue becomes even bigger when the laser dot moves far from the turret: the angles become always more smaller. The result was that the performances of the turret could be good enough only on a small size space around the turret, but that was not certainly enough for our system.
+\subsubsection{Trajectory Smoothness}
+The performances degradation heavily impacts the smoothness of trajectory of the laser dot. Playing with servos' internal parameters we tried to find the right trade-off between precision and smoothness, but since the relative localization is based on the laser positions and the user following those positions, then we can not sacrifice either precision or smoothness.
+\subsubsection{Slow Communication Protocol}
+This turned out to be the main issue. This is only partially related with the communication speed of the motors. Of course, with a higher speed, we could afford to use a slower protocol. Anyway, solving that issue allowed us to obtain the best from that turret, hitting its limits, but obtaining a system which could work well enough.
+
+\subsection{Bioloid Serial Bus Interface}
+IMMAGINI\\
+This a simple board used to provide serial communication between the PC and the motors. It is also needed to provide voltage to the motors. We did not use it to power up the laser as the output voltage is too high and there is no voltage regulator.
+\subsection{Laser Diode and Arduino Uno Board}
+IMMAGINE\\
+We used a simple 5V red laser diode powered directly from an \emph{Arduino Uno Board}. We used that board because it provides a 5V output and thus was a simple and fast solution to power the laser.
+\subsection{Structural Parts}
+All the plastic components used to put the pieces together and make the turret stable were taken from the \textbf{Bioloid Comprehensive Robot Kit}
