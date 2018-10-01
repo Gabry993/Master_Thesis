@@ -2,38 +2,78 @@
 \label{chap:2}
 In this chapter we describe the hardware implementation of the system. In particular, in section \ref{sec:turret12} and \ref{sec:turret64} we will focus on the two different laser turrets built, pointing out all the issues that led us to built the second one. We also mention the arm IMU device and the groud robot used for reconstruct human pointing and build are demos respectively.
 \section{First Turret Model} \label{sec:turret12}
-Figures DA AGGIUNGERE shows the first turret. As we can see, it follows the model already seen in chapter \ref{chap:1}. So, at the base we have one servo motor in charge to control the \emph{pan} angle. On its flange, a second motor is mounted with a plastic bracket on its own flange. The laser diode is then mounted in the middle of that bracket, in such a way that its direction passes through the middle of the servo shaft. So, the second servo directly controls the \emph{tilt} angle. 
+Figures \ref{fig:firstModelSide} (SCATTARE IMMAGINI MIGLIORI) shows the first turret. As we can see, it follows the model already seen in chapter \ref{chap:1}. So, at the base we have one servo motor in charge to control the \emph{pan} angle. On its flange, a second motor is mounted with a plastic bracket on its own flange. The laser diode is then mounted in the middle of that bracket, in such a way that its direction passes through the middle of the servo shaft. So, the second servo directly controls the \emph{tilt} angle. 
 The \emph{Arduino Uno Board} and the \emph{Bioloid Bus Serial Interface} conclude our hardware list.
 \\In the next sections we analyze each parts and their uses in details.
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/firstModelSide.png}%
+	\caption{First Turret Model, Side}
+	\label{fig:firstModelSide}
+\end{figure}
 \subsection{Dynamixel AX-12+}
-As reported on the official website (RIFERIMENTO):\\ \virgolette{\emph{the DYNAMIXEL is a smart actuator system developed to be the exclusive connecting joints on a robot or mechanical structure. DYNAMIXELS’ are designed to be modular and daisy chained on any robot or mechanical design for powerful and flexible robotic movements. The DYNAMIXEL is a high performance actuator with a fully integrated DC (Direct Current) Motor + Reduction Gearhead + Controller + Driver + Network, all in one servo module actuator. Programmable and networkable, actuator status can be read and monitored through a data packet stream.}}\\
+As reported on the official website \cite{web-AX-12}:\\ \virgolette{\emph{the DYNAMIXEL is a smart actuator system developed to be the exclusive connecting joints on a robot or mechanical structure. DYNAMIXELS’ are designed to be modular and daisy chained on any robot or mechanical design for powerful and flexible robotic movements. The DYNAMIXEL is a high performance actuator with a fully integrated DC (Direct Current) Motor + Reduction Gearhead + Controller + Driver + Network, all in one servo module actuator. Programmable and networkable, actuator status can be read and monitored through a data packet stream.}}\\
 To build our first turret, we exploited two \textbf{Dynamixel AX-12+} motors.
 \subsection{Motor Specification}
-The full datasheet can be found RIFERIMENTO. We are mostly interested in two specifications: 
+The full datasheet can be found here \cite{datasheet-AX-12}. We are mostly interested in two specifications: 
 \begin{itemize}
     \item \textbf{Resolution}: $0.29^{\circ}$;
     \item \textbf{Communication speed}: 7343 bps $\sim$ 1 Mbps.
 \end{itemize}
 Those are the values that set the limitations for that turret, causing the issues we discuss in the next section.
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/ax12+.jpg}%
+	\caption{Dynamixel AX-12+}
+	\label{fig:ax12+}
+\end{figure}
 \subsection{Issues}\label{subs:firstModel:issues}
 Here we will only report the issues raised by the motors. Solutions are discussed in the next chapter.
 \subsubsection{Servo Resolution and Slow Speed Limit}
-Even though a resolution of $0.29^{\circ}$ could seem pretty good, that value heavily limits the performance of the turret. As a matter of fact, in our system, the joint will be often asked to do very small movement and, thus, drawing tiny angles. Moreover, the motor is not able to move with too much low speed values. That issue becomes even bigger when the laser dot moves far from the turret: the angles become always more smaller. The result was that the performances of the turret could be good enough only on a small size space around the turret, but that was not certainly enough for our system.
+Even though a resolution of $0.29^{\circ}$ could seem pretty good, that value heavily limits the performance of the turret. As a matter of fact, in our system, the joint will be often asked to do very small movement and, thus, drawing tiny angles. Moreover, the motor is not able to move with too much low speed values. That issue becomes even bigger when the laser dot moves far from the turret: the angles become always more smaller. The result is that the performances of the turret can be good enough only on a small size space around the turret, but that is not certainly enough for our system.
 \subsubsection{Trajectory Smoothness}
 The performances degradation heavily impacts the smoothness of trajectory of the laser dot. Playing with servos' internal parameters we tried to find the right trade-off between precision and smoothness, but since the relative localization is based on the laser positions and the user following those positions, then we can not sacrifice either precision or smoothness.
 \subsubsection{Slow Communication Protocol}
-This turned out to be the main issue. This is only partially related with the communication speed of the motors. Of course, with a higher speed, we could afford to use a slower protocol. Anyway, solving that issue allowed us to obtain the best from that turret, hitting its limits, but obtaining a system which could work well enough.
+This turned out to be the main issue. This is only partially related with the communication speed of the motors. Of course, with a higher speed, we could afford to use a slower protocol. Anyway, solving that issue allowed us to obtain the best from that turret, hitting its limits, but obtaining a system which could work well enough for our purposes.
 
 \subsection{Bioloid Bus Interface}
-IMMAGINI\\
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/busInterface.jpg}%
+	\caption{Bioloid Bus Interface}
+	\label{fig:busInterface}
+\end{figure}
 This board allows PC to communicate with Bioloid bus devices (e.g. Dynamixel AX-12) using a USB cable at speeds of up to 1.0 Mbps. In other words,
-this a simple board provides serial communication between the PC and the motors. It is also needed to provide voltage to the motors. We did not use it to power up the laser as the output voltage is too high and there is no voltage regulator.
+this simple device provides serial communication between the PC and the motors. It is also needed to provide voltage to the motors. We did not use it to power up the laser as the output voltage is too high and there is no voltage regulator.
 \subsection{Laser Diode and Arduino Uno Board}
-IMMAGINE\\
-We used a simple 5V red laser diode powered directly from an \emph{Arduino Uno Board}. We used that board because it provides a 5V output and thus was a simple and fast solution to power the laser.
+IMMAGINE DA SCATTARE\\
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/laserArduino.jpg}%
+	\caption{Laser Diode and Arduino Uno Board}
+	\label{fig:laserArduino}
+\end{figure}
+We use a simple 5V red laser diode powered directly from an \emph{Arduino Uno Board}. We use that board because it provides a 5V output and thus is a simple and fast solution to power the laser.
 \subsection{Structural Parts}
-All the plastic components used to put the pieces together and make the turret stable were taken from the \textbf{Bioloid Comprehensive Robot Kit} IMMAGINE
-
+Figures \ref{fig:axFrames} shows the plastic frames used to assemble the turret. Figures \ref{axMounting1} and \ref{axMounting2} shows how they are attached to the motor.
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/axFrames.png}%
+	\caption{Plastic Frames}
+	\label{fig:axFrames}
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/axMounting1.png}%
+	\caption{Mounting F2 Frame}
+	\label{fig:axFrames}
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/axMounting2.png}%
+	\caption{Mounting F3 Frame}
+	\label{fig:axFrames}
+\end{figure}
 \section{Second Turret Model}\label{sec:turret64}
 As already mentioned, after we were able to get the best from the first model, we decided to base our system on a new and more powerful turret. In IMMAGINE we can immediately see that there are some structural difference from the previous model, but those are already discussed in \ref{subs:secondModel}. Here, we want to discuss the new hardware, in particular motors and structural parts, which come from the ScorpionX MX-64 Robot Turret Kit by Interbotix RIFERIMENTO SITO.
 \subsection{Dynamixel MX-64T}
