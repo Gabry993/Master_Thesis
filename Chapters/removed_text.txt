@@ -1,0 +1,13 @@
+\paragraph{ROS Library:} changing the library for ROS, using both official and unofficial;
+\paragraph{Wheel Mode vs Joint Mode:} those servos have the possibility to directly control their velocity (wheel mode) and not their position (joint mode, default behaviour). Thus, we implemented an open loop controller in wheel mode;
+\paragraph{PID Controller:} again using wheel mode, we tried to build a PID controller;
+\paragraph{PID, Joint Mode:} we even tried a PID controller in joint mode, though it did not make much sense;
+\paragraph{Compliance Slope and Margin:} those servos have two internal parameters. \emph{Compliance} is to set the control flexibility of the motor.
+Diagram in figure \ref{fig:compliance} shows the relationship between output torque and position of the motor. \emph{Compliance Margin} exists in each direction of CW/CCW and means the error between goal position and present position. The greater the value, the more difference occurs. \emph{Compliance Slope} sets the level of Torque near the goal position, the higher the value, the more flexibility is obtained.
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/compliance.png}%
+	\caption{Compliance Slope and Margin}
+	\label{fig:compliance}
+\end{figure}
+\\

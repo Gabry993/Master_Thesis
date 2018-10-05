@@ -128,7 +128,7 @@ If the line and the plane are not parallel, then we can compute their unique poi
 	\textbf{n}\cdot(\textbf{w}+s\textbf{u})=0 \label{eq:dot}
 \end{align}
 Solving \ref{eq:dot} we obtain the intersect point $P(s_I)$:
-\begin{align}
+\begin{align}\label{eq:intersection}
 	s_I = \frac{\textbf{-n}\cdot\textbf{w}}{\textbf{n}\cdot\textbf{u}}=\frac{\textbf{n}\cdot(V_0-P_0)}{\textbf{n}\cdot(P_1-P_0)}=\frac{-(ax_0+by_0+cz_0+d)}{\textbf{n}\cdot\textbf{u}}
 \end{align}
 \begin{figure}
@@ -137,7 +137,7 @@ Solving \ref{eq:dot} we obtain the intersect point $P(s_I)$:
 	\caption{Human Pointing Model}
 	\label{fig:pointingModel}
 \end{figure}
-\subsection{Relative Localization}
+\section{Relative Localization} \label{sec:relloc}
 The relative localization procedure goal is to estimate the pose (position and orientation) of the turret's frame in the reference frame of the human. The approach we use is the one proposed in \cite{gromov2018robot}.\\
 First, we define the human frame $\{H\}$ the same way we did in section \ref{sec:1.2}. The reference frame $\{B\}$ is an arbitrary fixed reference frame in which the turret reports the position of the laser projected dot (in section \ref{sec:1.1} this is the \textbf{base\_frame}).\\ The input of the procedure is a finite set of pairs $C$:
 \begin{align}
@@ -154,11 +154,10 @@ This coordinate transformation is obtained through an optimization procedure: gi
 	P_i^{\{H\}}= TP_i^{\{B\}} \nonumber
 \end{align}
 Using these points we define a new ray $q_i^{\{H\}}$ that shares the origin with $r_i^{\{H\}}$, but passes through the point $P_i^{\{H\}}$. In that way we can define an error function $\theta$ for a set of pairs $C$:
-\begin{align}
+\begin{align}\label{eq:error}
 	\theta(T,C)=\frac{1}{N}\sum_{i=1}^N\angle(r_i^{\{H\}},q_i^{\{H\}})
 \end{align}
 where $\angle(\dots$) represents the unsigned angle between the directions of two rays. So, the goal of the optimization procedure is to find the coordinate frame transformation $T^*$ between the operator frame $\{H\}$ and the laser frame $\{B\}$ that minimizes that error function:
 \begin{align}
 	T^*=\argmin_T\theta(T,C)
 \end{align}
-

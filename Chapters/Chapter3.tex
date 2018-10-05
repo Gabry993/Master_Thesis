@@ -1,59 +1,103 @@
 \chapter{System Implementation}\label{chap:3}
 (Forse posso inserire capitolo in cui illustro anche le componenti software da un punto di vista piu' generico. Ovvero ROS e Dynamixel SDK/workbench. Ho paura non ci si tutto sto granche' da dire, vedremo.)
-Now that we have all the theoretical and practical elements of the system, here we report all the work done to implement it on a software side. That includes code written from scratch and also code used to interface with already existing parts. This chapter can be divided in 3 parts: first, we describe the code implemented to control the turret and the solution adopted to overcome the issues mentioned in \ref{subs:firstModel:issues}. Then, we explain how we interface with the arm pointing system and the relative localization procedure. Finally, we describe the implementation of the demos involving the kobuki. Experiment setups and procedures are left for chapter \ref{chap:4}.
+Now that we have all the theoretical and practical elements of the system, here we report all the work done to implement it on a software side. That includes code written from scratch and also code used to interface with already existing parts. This chapter can be divided in 3 parts: first, we describe the code implemented to control the turret and the solution adopted to overcome the issues mentioned in \ref{subs:firstModel:issues}. Then, we explain how we interface with the arm pointing system and the relative localization procedure. Finally, we describe the implementation of our demos. Experiment setups and procedures are left for chapter \ref{chap:4}.
 \section{Turret Software Implementation}
 First, we must recall what are our goals. We want to be able to drive a laser dot on a given surface (i.e. the floor) by setting its \emph{x} and \emph{y} coordinates (the \emph{z} would be implicit on the floor). This must be done with a good precision and also with high frequency, as we want to draw nice and smooth trajectories with the laser. To do so, we can only control two Dynamixel servos, setting their angles values accordingly to the inverse kinematics solved in \ref{sec:1.1}.\\
 So, we will describe how we implement the turret model and then the interface written to control the motors and achieve our goals.
 \subsection{Turret Model Implementation}
-The code to implement the two turret models can be found inside \textbf{tf\_broadcaster.py} and \textbf{mx64\_tf\_broadcaster.py} in the project repository RIFERIMENTO. They implement a ROS node containing the inverse kinematic equation and the code to publish the \emph{tf tree} of the turret. Those models, in fact, are simply implemented as a chain of \emph{tf frames}. \textbf{tf} is a package that lets the user keep track of multiple coordinate frames over time. \textbf{tf} maintains the relationship between coordinate frames in a tree structure buffered in time, and lets the user transform points, vectors, etc between any two coordinate frames at any desired point in time. In that way, we can easily keep track of the position/transformation of our frame, corresponding to our \emph{pan} and \emph{tilt} angle. This is an immediate implementation of the logic already depicted in figures \ref{fig:firstModelRefFrame} and \ref{fig:secondModelRefFrame}. Listing \ref{lst:mx64_tf_broadcaster} shows an example of the code publishing the \emph{tf tree}.\\
+The two turret models are implemented as ROS node containing the inverse kinematic equation and the code to publish the \emph{tf tree} of the turret. Those models, in fact, are simply implemented as a chain of \emph{tf frames}. \textbf{tf} is a package that lets the user keep track of multiple coordinate frames over time. \textbf{tf} maintains the relationship between coordinate frames in a tree structure buffered in time, and lets the user transform points, vectors, etc between any two coordinate frames at any desired point in time. In that way, we can easily keep track of the position/transformation of our frame, corresponding to our \emph{pan} and \emph{tilt} angle. This is an immediate implementation of the logic already depicted in figures \ref{fig:firstModelRefFrame} and \ref{fig:secondModelRefFrame}.\\
 So, those are the nodes in charge to compute and keep track of the values of our two DoF.
-\begin{lstlisting}[caption={tf tree publisher of the MX-64 based turret},label={lst:mx64_tf_broadcaster},language=Python]
-def publish_tf_tree(self, m1, m2):
-        self.br.sendTransform((0, 0, dz_to_motor_1_flange),
-                         tf.transformations.quaternion_from_euler(0, 0, m1),
-                         rospy.Time.now(),
-                         "pan_link",
-                         "base_link")
-        self.br.sendTransform((0, 0, dz_to_motor_2_flange),
-                         tf.transformations.quaternion_from_euler(np.pi/2, -np.pi/2, 0),
-                         rospy.Time.now(),
-                         "tilt_link",
-                         "pan_link")
-        self.br.sendTransform((0, 0, 0),
-                         tf.transformations.quaternion_from_euler(0, 0, m2 - np.pi/2),
-                         rospy.Time.now(),
-                         "laser_pointer_link",
-                         "tilt_link")
-        self.br.sendTransform((0.075, 0, 0),
-                         tf.transformations.quaternion_from_euler(0, 0, -np.pi/2),
-                         rospy.Time.now(),
-                         "laser_link",
-                         "laser_pointer_link")
-        self.br.sendTransform((5.0, 0, 0),
-                         tf.transformations.quaternion_from_euler(0, 0, 0),
-                         rospy.Time.now(),
-                         "debug_link",
-                         "laser_link")
-        self.rate.sleep()
-\end{lstlisting}
+
+
 \subsection{Motors Controller}
-The drivers for both the AX-12+ and the MX-64 Dynamixels are provided by the \textbf{dynamixel\_sdk}. Moreover, the \textbf{dynamixel\_workbench} offers ROS interfaces to work with the official sdk. That is one of the most crucial part of software, because it is directly related to the issues mentioned in section \ref{subs:firstModel:issues}. As a matter of fact, we tried many different solution to overcome our imprecision and trajectory smoothness problem:
-\paragraph{ROS Library:} changing the library for ROS, using both official and unofficial;
-\paragraph{Wheel Mode vs Joint Mode:} those servos have the possibility to directly control their velocity (wheel mode) and not their position (joint mode, default behaviour). Thus, we implemented an open loop controller in wheel mode;
-\paragraph{PID Controller:} again using wheel mode, we tried to build a PID controller;
-\paragraph{PID, Joint Mode:} we even tried a PID controller in joint mode, though it did not make much sense;
-\paragraph{Compliance Slope and Margin:} those servos have two internal parameters. \emph{Compliance} is to set the control flexibility of the motor.
-Diagram in figure \ref{fig:compliance} shows the relationship between output torque and position of the motor. \emph{Compliance Margin} exists in each direction of CW/CCW and means the error between goal position and present position. The greater the value, the more difference occurs. \emph{Compliance Slope} sets the level of Torque near the goal position, the higher the value, the more flexibility is obtained.
+The drivers for both the AX-12+ and the MX-64 Dynamixels are provided by the \textbf{dynamixel\_sdk}. Moreover, the \textbf{dynamixel\_workbench} offers ROS interfaces to work with the official sdk. That is one of the most crucial part of software, because it is directly related to the issues mentioned in section \ref{subs:firstModel:issues}. As a matter of fact, we tried many different solution to overcome our imprecision and trajectory smoothness problem, but nearly all of them failed! This is mostly due to the slow communication protocol. As a matter of fact, we found out that the motors were not able to process all the points composing the trajectory that we needed to send at 50Hz and they were simply dropping them. That happens because each time a command is sent through the bus interface, each motors has to send its acknowledgment. So, we disabled all kind of response from the servos, assuming that once a command is sent, it will be properly executed. Moreover, we had to modify the drivers to be sure that the PC would not wait for motors replies. That was a bit tricky as, even though the low level function to write the servos registries without wait for reply existed, we had to find and expose it through the workbench libraries.\\
+After that, we were able to draw our smooth trajectories in the simplest way possible: sending points at a fixed rate with the servos in joint mode. \emph{Joint mode} means \emph{position control}. In other word, we can directly specify the value of the position/angle we want the servo to reach to the servo itself. Its internal controller will move the motor accordingly.\\
+That worked fine with the first turret model, but also with the second one. Even better, the \emph{MX-64} based turret works perfectly thanks to its better resolution.\\
+
+Even if the two turret model could use the same interface, we have written two different ones as, for the first turret, we used an unofficial low level driver that was tightly coupled with the architecture of the Dynamixel \emph{AX-12+} and thus was not reusable. On the contrary, for the second turret, the code was rewritten to directly exploit the generic ROS service interface offered by the \textbf{dynamixel\_workbench}. That code would also work with the first model.\\
+Finally, we have a useful module to publish the points composing the desired trajectory.
+
+\subsection{Laser Turret Complete Picture}
+Now that all the software parts composing the turret have been introduced, we can put everything together to understand exactly how the code is modulated and which module is in charge of what. Here we will consider the file related to the \emph{MX-64} turret. Figure \ref{fig:turretPipeline} give us an idea.
+\paragraph{tf\_broadcaster} is the module containing and simulating the geometrical model of the turret. It also computes the inverse kinematic of the laser dot. So, this is the piece of software in charge of computing the joints position (i.e. \emph{pan} and \emph{tilt} values) corresponding to the laser dot goal position (expressed in the reference frame of the turret). It only takes a 3D point as input, but serves all our purposes: it can be used to draw a trajectory, as long as ones send a stream of point as input; it can be used to follow the human pointing, after the relative localization is done; it can, of course, mark a single spot on the floor (as we need it for the experiments).
+It will publish those values and update its internal representation of the turret accordingly, but it will not directly send the commands to move the motors. This is very convenient, as it allows us to simulate the system even without a physical turret and decouples the logical model from the physical controller.\\
+\paragraph{turret} module contains that physical controller. Again, that code is written with the idea of making the system modular. In fact, this class leverages on the \textbf{dynamixel\_workbench} to send commands to any Dynamixel motors. In that way, as long as we are working with a device which needs to set only two angles (e.g. \emph{pan} and \emph{tilt} unit), we can plug into the system any turret built with any Dynamixel motor model. Needless to say, that was helpful when we had to deal with two different turret models.\\
+\paragraph{trajectory\_publisher} is needed to decide the shape of the trajectory to draw. Then, it will publish each point at a fixed rate to the interface provided by \textbf{tf\_broadcaster}. In that way, the laser dot will follow the desired trajectory. We can draw many different shapes, but in our experiments and demos we use the \virgolette{$\infty$} shape.
+
 \begin{figure}
 	\centering
-	\includegraphics[width=\textwidth]{img/compliance.jpg}%
-	\caption{Compliance Slope and Margin}
-	\label{fig:compliance}
+	\includegraphics[width=\textwidth]{img/turretPipeline.png}%
+	\caption{Laser Turret Implementation, the Complete Picture}
+	\label{fig:turretPipeline}
 \end{figure}
-\\
 
-All those attempts failed! This is mostly due to the slow communication protocol. As a matter of fact, we found out that the motors were not able to process all the points composing the trajectory that we needed to send at 50Hz and they were simply dropping them. That happens because each time a command is sent through the bus interface, each motors has to send its acknowledgment. So, we disabled all kind of response from the servos, assuming that once a command is sent, it will be properly executed. Moreover, we had to modify the drivers to be sure that the PC would not wait for motors replies. That was a bit tricky as, even though the low level function to write the servos registries without wait for reply existed, we had to find and expose it through the workbench libraries.\\
-After that, we were able to draw our smooth trajectories in the simplest way possible: sending points at a fixed rate with the servos in joint mode. That worked fine with the first turret model, but also with the second one. Even better, the \emph{MX-64} based turret worked perfectly thanks to its better resolution.\\
 
-We should mention that the code in charge of interfacing with the motors (i.e. setting the joints position) can be found inside \textbf{dynamixel\_turret.py} for the first model and \textbf{mx64\_turret.py} for the second. Even if they could use the same interface, we have two different file as, for the second turret, the code was rewritten to directly exploit the ROS service interface offered by the \textbf{dynamixel\_workbench}.\\
-Finally, inside the \textbf{trajectory\_publisher.py} we have the code to publish the points composing the desired trajectory (e.g. circle, square, \virgolette{$\infty$} shape). 
+\section{Pointing Software Implementation}
+As explained in section \ref{sec:1.2}, we are using the human pointing model suggested and implemented for \cite{gromov2018robot}. The geometry already presented in that section is very convenient as it can be implemented directly into code, as in the \textbf{arm\_node} module.\\
+Thus, is very simple to understand how that part works: we receive as input the quaternions (i.e. the rotation) from the wearable IMU. In that way we can determine the direction of the pointing ray that we know has its origin between the eyes and passes through the fingertip of the human, exactly as previously shown in figure \ref{fig:pointingModel}.\\
+We will not explain that code in details since it was not developed for that thesis, but we will mention one interesting fact related to pointing on the floor and the differences occurred when implementing the pointing on the wall (that part was developed for the thesis).
+\subsection{Pointing on the Floor}
+Keeping in mind that the pointing ray is an infinite line, we can easily see that there is a problem: when the human is pointing above the horizon (i.e. is not pointing on the floor), the ray will be still intersecting the plane behind the human. Luckily, for how things have been defined in \ref{eq:intersection}, we can simply check whether $s_I \geq 1$ to be sure that the intersection is ahead of the human. If not (also if the ray is parallel to the floor), we do not have a valid intersection, thus we return a pose for the human made with \emph{NaN} values.
+\subsection{Floor vs Wall}
+As already stated, for that thesis we implemented also a demo with the user pointing on the wall. The implementation for the pointing itself was pretty straightforward, as it is similar to the one on the floor, but there are a couple of details that are implicit when pointing on the floor and that must be taken into account for the wall case. In fact, assuming that the human is standing on a flat plane perpendicular to him, which is a fair assumption for our system, we already know the distance from the floor (i.e. $0$) and its orientation. So, we know that if the human is not pointing above the horizon, we have an intersection. However, in the wall case, we have to explicitly know and set the distance of the human from the wall and its orientation to intersect the pointing ray. That makes the demo for our system on the wall limited by those initial conditions that, on the contrary, can be implicitly taken for granted in the floor case.
+
+
+\section{Relative Localization Software Implementation}
+As for the the pointing, the relative localization (relloc) implementation is the same proposed in \cite{gromov2018robot}. However, that code was written to work with a drone, so a flying robot with an odometry which is slightly different from a ground robot (and a laser point). For that thesis, only a couple of modifications were needed to interface the turret and then replace the drone with the laser dot. The result can be seen in \textbf{motion\_relloc} module. In that section we will give an overview of how that procedure is implemented in terms of input and output.
+\subsection{Relloc Input}
+As already explained in \ref{sec:relloc}, the relloc procedure takes as input a set of pairs composed by the position of the laser dot in the turret frame and the \emph{corresponding} pointing ray in human frame. \emph{Corresponding} means that we want to get the data of the ray generated by the human while the turret was marking that particular point with the laser. This is crucial, because it means that data must be synchronized precisely. This also explains why we wanted the turret to be  as precise, fast and smooth as possible. Thus, we are sending trajectory point to the turret at $50 Hz$ and collecting data from the arm IMU at the same rate.\\
+To build our input set we specify the duration of the interaction in seconds (usually is $5s$ in our demos) and the number of pairs to sample (usually $250$). Since in $5$ seconds at $50 Hz$ we collect exactly $250$ pairs, it means that we usually sample the whole set. We use those values as $5$ second are enough to draw an $\infty$ shaped trajectory with a speed that allows the human to follow the laser easily.
+\subsection{Relloc Output}
+Recalling what was written in section \ref{sec:relloc}, the output of the relloc is the transformation:
+\begin{align}
+	\rho = [t_x, t_y, t_z, \gamma_z] \nonumber
+\end{align}
+which allows us to collocate the turret's frame pose (position and orientation) into the human's frame.\\
+To obtain that transformation we iteratively call the optimization procedure contained already explained. We start with an arbitrary initial guess of:
+\begin{align}
+	\rho = [0, 0, 0, 0] \nonumber
+\end{align}
+and then try to reduce the error as defined in equation \ref{eq:error}, by sampling each pairs in a random order and updating $\rho$ accordingly.\\
+In the end, we publish the transform of the laser dot into the human frame for a fixed time window (usually $60s$), leveraging on the functions provided by \textbf{tf}.
+\section{System Complete Pipeline}
+Now we finally have all the elements to understand the entire system pipeline, from the turret to the relloc. Figure \ref{fig:systemBigPicture} shows a schematic. We can see that the turret draws a trajectory, the human follows that trajectory with pointing gestures. The system then puts together each laser point with each pointing ray and computes the relative localization.
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/systemPipeline.png}%
+	\caption{System Complete Pipeline}
+	\label{fig:turretPipeline}
+\end{figure}
+
+\section{Demos Implementation}
+We have implemented three different demos to show the behaviour of the system and also demonstrate possible use cases.
+\subsection{Relloc Demos}
+Obviously, those demos are needed to give an example of the relloc. There are 2 different version of it. In both cases, the turret is placed on a surface (e.g. a table) and the human can stay on any point on the floor.\\ The first one computes the relloc between the human and the turret and then uses the result obtained to mark the point where the user is standing with the laser. This is useful to have a qualitative idea of the precision of the relloc.\\
+The second version again computes the relloc, but then allows the user to directly control the laser dot position on the floor (we implemented also a wall version) by pointing at it. This, of course, is possible thanks to the relloc obtained. That demos is very interesting because it gives us a good insight of the entire system: the turret, the pointing model and the relloc.\\
+All the transformations needed between the turret and the human frame are easily implemented thanks to the \textbf{tf} library for ROS, which played a major role for those demos. All the code which run those examples is launched inside \textbf{mx64\_try.launch}. In particular, the core part of the demos is inside \textbf{relloc\_try.py}.
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/rellocDemo.png}%
+	\caption{User Trying the Relloc Demo}
+	\label{fig:rellocDemo}
+\end{figure}
+\subsection{Kobuki Go to Goal Demo}\label{subs:kobukiGoToGoal}
+That demo exploits the kobuki platform to show an interesting use case for the system: mobile robot navigation.\\
+A video which shows the demo is available online.\\
+First the user does the relloc (figure \ref{fig:goToGoalDemo}, top-left corner), then he can control the laser (figure \ref{fig:goToGoalDemo}, top-right corner). After that, he orders the kobuki to reach a certain point by pointing at it with the laser for three seconds (figure \ref{fig:goToGoalDemo}, bottom-left corner). Finally, the kobuki goes there while keeping the laser pointed at the goal position (figure \ref{fig:goToGoalDemo}, bottom-right corner).\\
+On a software level, we implemented a basic PID controller to move the kobuki. The library to interface with the robot is available online \cite{kobuki:ROS}.\\ To detect the fact that the user is pointing the same point for three seconds, we implemented a nice function with a fixed size queue where we store the coordinates of the last 150 laser points (which means points in the last $3$ seconds at $50Hz$). We check if the average distance of each point from the first point in the queue is within a given threshold: in that case we detect the 3 seconds pointing.\\
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/goToGoalDemo.png}%
+	\caption{Kobuki Go to Goal Demo}
+	\label{fig:goToGoalDemo}
+\end{figure}
+\subsection{Kobuki Follow Trajectory Demo}
+In that case we have the same ingredients of the \emph{Go to Goal Demo}, but the last part is different. Now the kobuki will not simply go to a goal point, but rather it will follow a trajectory drawn by the user. So, he would point a location for three second until a sound feedback is emitted. That marks the begin of the trajectory. Then he will draw the entire trajectory with the laser and stop again for three seconds at the end of the trajectory. Another sound is played and the kobuki will reach the start of the trajectory and then will follow it until its last point. A video is available also for that demo.\\
+The three second pointing detection code is the same explained in \ref{subs:kobukiGoToGoal}. Moreover, we added code to sample the trajectory point list based on distance: that means that the actual trajectory followed by the kobuki is composed of points which are at a threshold distance from their predecessor. Of course, if that threshold is zero, we are using all the sampled points.\\
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/followTrajectoryDemo.png}%
+	\caption{Kobuki Follow Trajecotry Demo}
+	\label{fig:followTrajectoryDemo}
+\end{figure}
