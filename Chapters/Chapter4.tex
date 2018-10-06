@@ -12,10 +12,10 @@ We place the turret and three ground targets in known positions. The user is pla
 The user has to point each target first without any additional visual feedback, so he has to rely solely on his perception. Second, he has to point again with the visual feedback provided by the laser dot. Those are the steps composing each iteration of the experiment (one for each target):
 \begin{itemize}
     \item after a countdown, the user points the target without feedback;
-    \item the user keeps pointing for 5 seconds
+    \item the user keeps pointing for 5 seconds;
     \item after a sound feedback, the user can rest his arm;
-    \item after a countdown, the user points the target with the laser feedback;
-    \item the user keeps pointing for 5 seconds
+    \item after a countdown, the user points the target with the laser; feedback;
+    \item the user keeps pointing for 5 seconds;
     \item after a sound feedback, the user can rest his arm.
 \end{itemize}
 Each user has to perform that loop three time for each target, for a total of nine iterations.
@@ -23,8 +23,8 @@ Each user has to perform that loop three time for each target, for a total of ni
 The performance of the interface crucially relies on operator’s perception. Due to simplifications in the pointing model that we use and various sensory errors, the estimated frame transformations and the pointing are expected to be imprecise.\\
 With that experiment we want to understand if availability of visual feedback is useful and thus improves the pointing accuracy. This is why we ask users to drive the laser dot to the target, where the laser dot represents the location where the system thinks the user is pointing. Comparing results with and without feedback, we can understand if providing that feedback helps users to timely adapt to any misalignments.
 
-\subsection{Quantitative Results}
-First, we can look at the users' trajectories with and without feedback in figure \ref{fig:userTrajectories}. We can immediately see that without feedback users go straight to their goal point, but that point, for the system, does not correspond to the target. With feedback, on the contrary, users are able to tell the system to point at the target. This intuition is confirmed by figure \ref{fig:avgDistance}: without feedback, users quickly reach an average distance from the target of 0.5 m but do not improve any further. When the feedback is provided, distance decreases to almost 0 within 5 seconds. This is expected as the system has intrinsic inaccuracies (for example in the reconstruction of pointing rays) which the user is unable to see and correct. 
+\subsection{Results}
+First, we can look at the users' trajectories with and without feedback in figure \ref{fig:userTrajectories}. We can immediately see that without feedback users go straight to their goal point, but that point, for the system, does not correspond to the target. With feedback, on the contrary, users are able to tell the system to point at the target. This intuition can be see in figure \ref{fig:distanceComparison} and is further confirmed by figure \ref{fig:avgDistance}: without feedback, users quickly reach an average distance from the target of 0.5 m but do not improve any further. When the feedback is provided, distance decreases to almost 0 within 5 seconds. This is expected as the system has intrinsic inaccuracies (for example in the reconstruction of pointing rays) which the user is unable to see and correct. 
 
 This demonstrates that real-time feedback is a key component for our system. This justifies all the work done to build the turret, as, while with fast moving robots (e.g. a drone), the robot position itself can be the feedback, for slow moving machine (e.g. a ground robot) the laser dot represents a valid possibility, as also our demos with the kobuki show.
 
@@ -46,3 +46,28 @@ This demonstrates that real-time feedback is a key component for our system. Thi
 	\caption{Comparison Of Average Distances Over Time}
 	\label{fig:avgDistance}
 \end{figure}
+
+\section{Relloc}
+For that experiment we will describe the setup and the goal, but will provide only results obtained with the first turret model, which heavily influenced the results with its limited performance. We have also experimented a bit with the second turret obtaining better qualitative result, but we did not have time to perform an entire data collection with users, which we plann to do in the future.
+\todo{spiegare nel pointing il fatto che prendiamo le misure della persona}
+\subsection{Setup}
+We perform the relloc 10 times from 10 different known positions on the floor. The order of the positions is randomly shuffled for each user. So, the experiment runs the following loop 10 time for each user:
+\begin{itemize}
+    \item the turret points the position where the user must stand and starts a countdown;
+    \item at the end of the countdown, the relloc starts: the turret draws the $\infty$ trajectory and the user follow it with pointing gestures;
+    \item once the relloc is done, the turret points to the estimated location of the user.
+\end{itemize}
+In that way we can have an immediate visible the result: the nearer the turret is pointing to the user, the better the relloc is working. We can obtain that measure directly confronting the known initial location with the estimated one.
+
+\subsection{Goals}
+The main goals of that experiment of course is to obtain a direct estimate of the relloc precision. Moreover, it is useful to see if also inexperienced users can interface with the system easily.
+
+\subsection{Results}
+As already said, we collected data only with the first turret model. We will also run the experiment with the second turret, but from the trials we already did, we have qualitative evidence that the second should obtain better results than the first. \\
+However, we report the average error obtained with the data collected with the first turret:
+\begin{align}
+    \text{mean\_distance\_error} =&\ 48.74\text{ cm} \nonumber\\
+    \text{mean\_x\_error} =&\ 36.71\text{ cm}\nonumber\\
+    \text{mean\_y\_error} =&\ 24.60\text{ cm}\nonumber
+\end{align}
+where \textbf{mean\_distance\_error} is the mean of the distances between the position where the user is supposed to be when starting the relloc and the position estimated by our system. \textbf{mean\_x/y\_error} are the means of the differences between each coordinates.
