@@ -82,9 +82,10 @@ where \textbf{mean\_distance\_error} is the mean of the distances between the po
 As already mentioned, we explored a couple of applications for our system. One consists exactly in what was done for the experiments already presented. In fact, that system is useful to collect data and study pointing models. It also serves as a tool to asses the performances and the precision of the relloc procedure.\\
 However, in that section will we present two entire human-robot interaction scenarios involving a ground robot (the kobuki) as well as the turret.\\
 A video containing both of them is available at \todo{ref al video}
+
 \subsection{Kobuki Go to Goal Application}
-The original relloc system was applied to control a flying robot \cite{gromov2018robot}. In that context, the feedback user had while controlling the drone with pointing consisted of the drone itself. However, that approach is not suitable for a slow moving ground robot, as the kobuki. Here the turret system comes in play.\\
-With our demo we demonstrate that the laser turret approach is suitable to face the mobile robot navigation task. Figure \ref{fig:kgtgdSetup} the setup of the demo: we have the user wearing the IMU device and the kobuki equipped with our turret. The steps composing the demo are the following:
+The original relloc system was applied to control a flying robot \cite{gromov2018robot}. In that context, the feedback user had while controlling the drone with pointing consisted of the drone itself. However, that approach is not suitable for a slow moving ground robot, as the kobuki. Here the turret system comes in play: with the turret mounted on top of the kobuki, we can face the mobile robot navigation task in a convenient way.\\
+Figure \ref{fig:kgtgdSetup} the setup of the demo: we have the user wearing the IMU device and the kobuki equipped with our turret. The steps composing the demo are the following:
 \begin{itemize}
     \item the user does the relloc (figure \ref{fig:kgtgdRelloc});
     \item an audio feedback alerts the user that the relloc is done and he can now move the laser with pointing;
