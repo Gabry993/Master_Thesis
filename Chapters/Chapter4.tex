@@ -1,6 +1,6 @@
-\chapter{Experiments}
-In this chapter describe the two main experiments we built to collect data and analyze our system. Ten people were involved in the data collection. Each experiment will be presented in terms of goals, procedures and results (either qualitative or quantitative).
-\section{Pointing Feedback}
+\chapter{Experiments and Applications}\label{chap:4}
+In this chapter describe the two main experiments we built to collect data and analyze our system. Ten people were involved in the data collection. Each experiment will be presented in terms of goals, procedures and results. Moreover, we will show a couple of applications for the system involving also a ground robot. Those applications are not only discussed, but also demonstrated with a kobuki, allowing us to draw qualitative results.
+\section{Pointing Feedback Experiment}
 \subsection{Setup}
 \begin{figure}
 	\centering
@@ -47,9 +47,9 @@ This demonstrates that real-time feedback is a key component for our system. Thi
 	\label{fig:avgDistance}
 \end{figure}
 
-\section{Relloc}
-For that experiment we will describe the setup and the goal, but will provide only results obtained with the first turret model, which heavily influenced the results with its limited performance. We have also experimented a bit with the second turret obtaining better qualitative result, but we did not have time to perform an entire data collection with users, which we plann to do in the future.
-\todo{spiegare nel pointing il fatto che prendiamo le misure della persona}
+\section{Relloc Experiment}
+For that experiment we will describe the setup and the goal, but will provide only results obtained with the first turret model, which heavily influenced the results with its limited performance. We have also experimented a bit with the second turret obtaining better qualitative result, but we did not have time to perform an entire data collection with users, which we plan to do in the future.
+
 \subsection{Setup}
 We perform the relloc 9 times from 9 different known positions on the floor. The order of the positions is randomly shuffled for each user. So, the experiment runs the following loop 9 time for each user:
 \begin{itemize}
@@ -77,3 +77,40 @@ However, we report the average error obtained with the data collected with the f
     \text{mean\_y\_error} =&\ 24.60\text{ cm}\nonumber
 \end{align}
 where \textbf{mean\_distance\_error} is the mean of the distances between the position where the user is supposed to be when starting the relloc and the position estimated by our system. \textbf{mean\_x/y\_error} are the means of the differences between each coordinates.
+
+\section{Applications}
+As already mentioned, we explored a couple of applications for our system. One consists exactly in what was done for the experiments already presented. In fact, that system is useful to collect data and study pointing models. It also serves as a tool to asses the performances and the precision of the relloc procedure.\\
+However, in that section will we present two entire human-robot interaction scenarios involving a ground robot (the kobuki) as well as the turret.\\
+A video containing both of them is available at \todo{ref al video}
+\subsection{Kobuki Go to Goal Application}
+The original relloc system was applied to control a flying robot \cite{gromov2018robot}. In that context, the feedback user had while controlling the drone with pointing consisted of the drone itself. However, that approach is not suitable for a slow moving ground robot, as the kobuki. Here the turret system comes in play.\\
+With our demo we demonstrate that the laser turret approach is suitable to face the mobile robot navigation task. Figure \ref{fig:kgtgdSetup} the setup of the demo: we have the user wearing the IMU device and the kobuki equipped with our turret. The steps composing the demo are the following:
+\begin{itemize}
+    \item the user does the relloc (figure \ref{fig:kgtgdRelloc});
+    \item an audio feedback alerts the user that the relloc is done and he can now move the laser with pointing;
+    \item the user points the place he wants the kobuki to reach for three second (figure \ref{fig:kgtgdPointing});
+    \item the kobuki moves to that point, while the laser keeps pointing at it. (figure \ref{fig:kgtgdGoal})
+\end{itemize}
+Figure \ref{fig:kgtgdGoal} gives also a qualitative feedback: the user is able to drive the kobuki through the cones easily and precisely
+
+
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/kgtgdSetup.png}%
+	\caption{Kobuki Go to Goal Demo: Setup}
+	\label{fig:pointingExpSetup}
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/kgtgdPointing.png}%
+	\caption{Kobuki Go to Goal Demo: Pointing Goal Point}
+	\label{fig:pointingExpSetup}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/kgtgdGoal.png}%
+	\caption{Kobuki Go to Goal Demo: Goal Point Reached}
+	\label{fig:pointingExpSetup}
+\end{figure}
