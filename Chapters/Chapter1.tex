@@ -1,9 +1,14 @@
 \chapter{Model Specification}
 \label{chap:1} 
-In this chapter we describe the abstract models used to shape all the three parts of the system from a geometric perspective. (FARE QUI UN ELENCO? torretta, puntamento, relloc)
+In this chapter we describe the abstract models used to shape all the three parts of the system from a geometric perspective. That means:
+\begin{itemize}
+    \item the turret model;
+    \item the human pointing model;
+    \item the relative localization procedure.
+\end{itemize}
 \section{Turret Model}
 \label{sec:1.1}
-Degree of Freedom (DoF) is the number of independent parameters that define the configuration of a mechanical system. In our case, we wanted to build a two DoF Pan \& Tilt turret. That means that our parameters are two angles. In a 3D reference system, \textbf{pan} is the horizontal angle about the upright Z axis, \textbf{tilt} is the vertical angle about the rotated Y axis, as in figure \ref{fig:panTilt}.
+Degree of Freedom (DoF) is the number of independent parameters that define the configuration of a mechanical system. In that thesis, we present a two DoF Pan \& Tilt turret. That means that our parameters are two angles. In a 3D reference system, \textbf{pan} is the horizontal angle about the upright Z axis, \textbf{tilt} is the vertical angle about the rotated Y axis, as in figure \ref{fig:panTilt}.
 Our final goal is to be able to define the direction of a laser ray mounted on top of the turret, so that we can control the position of the projected laser dot on a given surface, by solving the system's inverse kinematics.\\
 \begin{figure}
 	\centering
@@ -14,7 +19,7 @@ Our final goal is to be able to define the direction of a laser ray mounted on t
 For those purposes, we have built two different turrets. Since the model of the first one is slightly simpler than the second, we will start describing the former, which turns out to be helpful to understand the latter. We will focus on the case in which the laser must be projected on the ground.
 
 \subsection{First Model}\label{subs:firstModel}
-First, figure \ref{fig:firstModelRefFrame} helps us understand how we have shaped the model to match the physical structure of the turret. We have three reference frames. The \textbf{base\_frame} is fixed and is the one in which we define the coordinates of the projected point. \textbf{pan\_frame} and \textbf{tilt\_frame} are the frames used to represent our revolute joints.
+First, figure \ref{fig:firstModelRefFrame} helps to understand how we the model is shaped to match the physical structure of the turret. We have three reference frames. The \textbf{base\_frame} is fixed and is the one in which we define the coordinates of the projected point. \textbf{pan\_frame} and \textbf{tilt\_frame} are the frames used to represent our revolute joints.
 \textbf{H} is the height of the turret, which is known. Note that the convention used for the frame is the following:
 \begin{itemize}
     \item red is the x axis;
