@@ -12,14 +12,14 @@ Degree of Freedom (DoF) is the number of independent parameters that define the 
 Our final goal is to be able to define the direction of a laser ray mounted on top of the turret, so that we can control the position of the projected laser dot on a given surface, by solving the system's inverse kinematics.\\
 \begin{figure}
 	\centering
-	\includegraphics[width=\textwidth]{img/panTilt.png}%
+	\includegraphics[width=.7\textwidth]{img/panTilt.png}%
 	\caption{Pan and Tilt}
 	\label{fig:panTilt}
 \end{figure}
 For those purposes, we have built two different turrets. Since the model of the first one is slightly simpler than the second, we will start describing the former, which turns out to be helpful to understand the latter. We will focus on the case in which the laser must be projected on the ground.
 
 \subsection{First Model}\label{subs:firstModel}
-First, figure \ref{fig:firstModelRefFrame} helps to understand how we the model is shaped to match the physical structure of the turret. We have three reference frames. The \textbf{base\_frame} is fixed and is the one in which we define the coordinates of the projected point. \textbf{pan\_frame} and \textbf{tilt\_frame} are the frames used to represent our revolute joints.
+First, figures \ref{fig:model1FrameCap} and \ref{fig:model1Cap} help to understand how the model is shaped to match the physical structure of the turret. We have three reference frames. The \textbf{base\_frame} is fixed and is the one in which we define the coordinates of the projected point. \textbf{pan\_frame} and \textbf{tilt\_frame} are the frames used to represent our revolute joints.
 \textbf{H} is the height of the turret, which is known. Note that the convention used for the frame is the following:
 \begin{itemize}
     \item red is the x axis;
@@ -49,10 +49,17 @@ We can easily obtain laser point coordinates:
 
 \begin{figure}
 	\centering
-	\includegraphics[width=\textwidth]{img/firstModel.png}%
-	\caption{First Model, Reference Frames}
-	\label{fig:firstModelRefFrame}
+	\includegraphics[width=.5\textwidth]{img/model1FrameCap.png}%
+	\caption{First Turret, Reference Frames}
+	\label{fig:model1FrameCap}
 \end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[width=.5\textwidth]{img/model1Cap.png}%
+	\caption{First Turret, 3D Model with Highlighted Frames}
+	\label{fig:model1Cap}
+\end{figure}
+
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{img/model1XY.png}%
@@ -119,7 +126,7 @@ Finally,
 \\
 \section{Human Pointing Model} \label{sec:1.2}
 The approach we follow to model human pointing is the one used in \cite{gromov2018robot}. \\
-The \emph{head-finger} model defines human pointing rays as originating at a centroid of the head and passing through the index fingertip. Figure \ref{fig:pointingModel} shows the model. \\
+The \emph{head-finger} model defines human pointing rays as originating at a centroid of the head and passing through the index fingertip. Figure \ref{fig:pointingModel} shows the model, figure \ref{fig:pointingCap} shows an explanation photo.\\
 The reference frame \textbf{human\_footprint} is located at the human feet with the \emph{x}-axis pointing forward, \emph{y}-axis to the left, and \emph{z}-axis pointing up. The pointing ray is a 3D half-line on which the point that the human intends to indicate lies. So, our goal is to intersect that line with the floor (i.e. the \emph{xy}-plane of \textbf{human\_footprint} frame) in order to get the point indicated by the user. To do so, we get pointing rays using orientation readings from a wearable IMU. Once we have that, we can compute the intersection of those rays with the ground as a simple \emph{line-plane} intersection, as explained in \cite{O'Rourke:1998:CGC:289380}.
 \\
 
@@ -136,6 +143,12 @@ Solving \ref{eq:dot} we obtain the intersect point $P(s_I)$:
 \begin{align}\label{eq:intersection}
 	s_I = \frac{\textbf{-n}\cdot\textbf{w}}{\textbf{n}\cdot\textbf{u}}=\frac{\textbf{n}\cdot(V_0-P_0)}{\textbf{n}\cdot(P_1-P_0)}=\frac{-(ax_0+by_0+cz_0+d)}{\textbf{n}\cdot\textbf{u}}
 \end{align}
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/pointingModel.png}%
+	\caption{Human Pointing Model}
+	\label{fig:pointingModel}
+\end{figure}
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{img/pointingModel.png}%
