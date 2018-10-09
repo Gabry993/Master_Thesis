@@ -46,12 +46,20 @@ This is the main issue. This is only partially related with the communication sp
 This board allows PC to communicate with Bioloid bus devices (e.g. Dynamixel AX-12) using a USB cable at speeds of up to 1.0 Mbps. In other words,
 this simple device provides serial communication between the PC and the motors. It is also needed to provide voltage to the motors. We can not use it to power up the laser as the output voltage is too high and there is no voltage regulator.
 \subsection{Laser Diode and Arduino Uno Board}
-IMMAGINE DA SCATTARE\\
 \begin{figure}
-	\centering
-	\includegraphics[width=\textwidth]{img/arduino.jpg}%
-	\caption{Laser Diode and Arduino Uno Board}
-	\label{fig:laserArduino}
+\centering
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{img/arduino.jpg}
+  \captionof{figure}{Arduino Uno Board}
+  \label{fig:arduino}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=.58\linewidth]{img/diode.jpg}
+  \captionof{figure}{Laser Diodes}
+  \label{fig:diode}
+\end{minipage}
 \end{figure}
 We use a simple 5V red laser diode powered directly from an \emph{Arduino Uno Board}. We use that board because it provides a 5V output and thus is a simple and fast solution to power the laser up.
 \subsection{Structural Parts}
