@@ -53,7 +53,7 @@ This board allows PC to communicate with Bioloid bus devices (e.g. Dynamixel AX-
 this simple device provides serial communication between the PC and the motors. It is also needed to provide voltage to the motors. We can not use it to power up the laser as the output voltage is too high and there is no voltage regulator.
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=\textwidth]{img/bioloid.png}%
+	\includegraphics[width=.5\textwidth]{img/bioloid.png}%
 	\caption{Bioloid Bus Interface}
 	\label{fig:busInterface}
 \end{figure}
@@ -123,7 +123,13 @@ From the full datasheet \cite{datasheet-MX64} we report only two important speci
 As we can see, the resolution of those servos is roughly 3 times better than the Dynamixel AX-12. This was enough to make the new turret perform perfectly for our needs using exactly the same approach we used to solve the issues explained in \ref{subs:firstModel:issues}
 \subsection{Other Components}
 Though we use a 3V green laser diode on that turret, the other components are the same: \emph{Bioloid Bus Interface} for communication and \emph{Arduino Uno Board} for powering the laser (that time from the 3.3V output).\\
-The structural parts are provided together with the ScorpionX MX-64 Robot Turret Kit. Since the bracket of the tilt servo is too short, we had to mount the laser diode perpendicularly, obtaining the different structure already discussed. MAGARI FOTO DETTAGLIO LASER
+The structural parts are provided together with the ScorpionX MX-64 Robot Turret Kit. Figure \ref{fig:mx64Pieces} shows the components used from that kit: the turret base and the metal frames. Since the bracket of the tilt servo is too short, we had to mount the laser diode perpendicularly, obtaining the different structure already discussed.
+\begin{figure}
+	\centering
+	\includegraphics[width=.7\textwidth]{img/mx64Pieces.png}%
+	\caption{\emph{Top-Left}: FR05-S101 Side Frame. \emph{Bottom-Left}: FR05-H101 Hinge Frame. \emph{Right}: ScorpionX MX-64 Robot Turret Kit.}
+	\label{fig:mx64Pieces}
+\end{figure}
 \section{Arm IMU}
 As explained in \ref{sec:1.2}, we needed an arm IMU device to reconstruct the direction of human pointing. First, we used the Myo Armband, \virgolette{\textit{a gesture recognition device worn on the forearm and manufactured by Thalmic Labs. The Myo enables the user to control technology wirelessly using various hand motions. It uses a set of electromyographic (EMG) sensors that sense electrical activity in the forearm muscles, combined with a gyroscope, accelerometer and magnetometer to recognize gestures.}}. Obviously, we were only interested only into the functions provided by gyroscope, accelerometer and magnetometer. We used such an expensive and mostly unnecessary device because it was what we already had.\\ Lately, we moved to a cheaper and more suitable device, the MetaMotionR board by Mbientlab, which can be mounted on a wrist band and provides a 9-axis IMU with Sensor Fusion. This is more convenient for our purposes, as it is easier to setup (it has a bluetooth driver for linux), more comfortable to wear (it is just like a watch) and also provides a LED for colour feedback and a small button (both are useful for our experiments and demos).
 \begin{figure}
