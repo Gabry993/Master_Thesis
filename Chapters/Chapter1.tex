@@ -12,29 +12,14 @@ Degree of Freedom (DoF) is the number of independent parameters that define the 
 Our final goal is to be able to define the direction of a laser ray mounted on top of the turret, so that we can control the position of the projected laser dot on a given surface, by solving the system's inverse kinematics.\\
 \begin{figure}
 	\centering
-	\includegraphics[width=.7\textwidth]{img/panTilt.png}%
-	\caption{Pan and Tilt}
+	\includegraphics[width=\textwidth]{img/panTilt.png}%
+	\caption{Pan Angle (on the left) and Tilt Angle (on the right) Explained}
 	\label{fig:panTilt}
-\end{figure}
-\begin{figure}
-\centering
-\begin{minipage}{.5\textwidth}
-  \centering
-  \includegraphics[width=.5\linewidth]{img/pan.png}
-  \captionof{figure}{Pan Angle Explained}
-  \label{fig:pan}
-\end{minipage}%
-\begin{minipage}{.5\textwidth}
-  \centering
-  \includegraphics[width=.6\linewidth]{img/tilt.png}
-  \captionof{figure}{Tilt Angle Explained}
-  \label{fig:tilt}
-\end{minipage}
 \end{figure}
 For those purposes, we have built two different turrets. Since the model of the first one is slightly simpler than the second, we will start describing the former, which turns out to be helpful to understand the latter. We will focus on the case in which the laser must be projected on the ground.
 
 \subsection{First Model}\label{subs:firstModel}
-First, figures \ref{fig:model1FrameCap} and \ref{fig:model1Cap} help to understand how the model is shaped to match the physical structure of the turret. We have three reference frames. The \textbf{base\_frame} is fixed and is the one in which we define the coordinates of the projected point. \textbf{pan\_frame} and \textbf{tilt\_frame} are the frames used to represent our revolute joints.
+First, figures \ref{fig:model1FrameCap} helps to understand how the model is shaped to match the physical structure of the turret. We have three reference frames. The \textbf{base\_frame} is fixed and is the one in which we define the coordinates of the projected point. \textbf{pan\_frame} and \textbf{tilt\_frame} are the frames used to represent our revolute joints.
 \textbf{H} is the height of the turret, which is known. Note that the convention used for the frame is the following:
 \begin{itemize}
     \item red is the x axis;
