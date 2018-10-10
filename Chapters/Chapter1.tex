@@ -144,6 +144,12 @@ Solving \ref{eq:dot} we obtain the intersect point $P(s_I)$:
 	\label{fig:pointingModel}
 \end{figure}
 \section{Relative Localization} \label{sec:relloc}
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/pointingRelloc.png}%
+	\caption{\emph{Left}, Phase 1: the operator points at the laser he want to interact with; an explicit (button press) event triggers the beginning of the interaction. \emph{Center}, Phase 2: the laser dot start moving along a paths, and the human keeps pointing at it; the system acquires a set of pairs each composed by: a pointing ray \emph{r} in the operator’s frame of reference $\{H\}$; a point $P$ in the turret’s fixed base frame $\{B\}$. \emph{Right}: after a few seconds the system has reconstructed the transformation $T^*$ linking $\{H\}$ and $\{R\}$: pointing rays can be known in the turret frame, and the interaction can continue in an application-dependent way.}
+	\label{fig:rellocExplained}
+\end{figure}
 The relative localization procedure goal is to estimate the pose (position and orientation) of the turret's frame in the reference frame of the human. The approach we use is the one proposed in \cite{gromov2018robot}.\\
 First, we define the human frame $\{H\}$ the same way we did in section \ref{sec:1.2}. The reference frame $\{B\}$ is an arbitrary fixed reference frame in which the turret reports the position of the laser projected dot (in section \ref{sec:1.1} this is the \textbf{base\_frame}).\\ The input of the procedure is a finite set of pairs $C$:
 \begin{align}
@@ -167,9 +173,3 @@ where $\angle(\dots$) represents the unsigned angle between the directions of tw
 \begin{align}
 	T^*=\argmin_T\theta(T,C)
 \end{align}
-\begin{figure}
-	\centering
-	\includegraphics[width=\textwidth]{img/pointingRelloc.png}%
-	\caption{\emph{Left}, Phase 1: the operator points at the laser they want to interact with; \emph{Center}, Phase 2: the laser dot start moving along a paths, and the human keeps pointing at it; the system acquires a set of pairs each composed by: a pointing ray \emph{r} in the operator’s frame of reference \emph{\{H\}}; a point \emph{P} in the turret’s fixed base frame \emph{\{B\}}. \emph{Right}: after a few seconds the system has reconstructed the transformation $T^*$ linking \emph{\{H\}} and \emph{\{R\}}: pointing rays can be known in the turret frame, and the interaction can continue in an application-dependent way.}
-	\label{fig:rellocExplained}
-\end{figure}
