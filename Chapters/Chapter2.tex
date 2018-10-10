@@ -44,21 +44,22 @@ Here we will only report the issues raised by the motors. Solutions are discusse
 \subsubsection{Servo Resolution and Slow Speed Limit}
 Even though a resolution of $0.29^{\circ}$ could seem pretty good, that value heavily limits the performance of the turret. As a matter of fact, in our system, the joint will be often asked to do very small movement and, thus, drawing tiny angles. Moreover, the motor is not able to move with too much low speed values. That issue becomes even bigger when the laser dot moves far from the turret: the angles become always more smaller. The result is that the performances of the turret can be good enough only on a small size space around the turret, but that is not certainly enough for our system.
 \subsubsection{Trajectory Smoothness}
-The performances degradation heavily impacts the smoothness of trajectory of the laser dot. Playing with servos internal parameters we could try to find the right trade-off between precision and smoothness, but since the relative localization is based on the laser positions and the user following those positions, then we can not sacrifice either precision or smoothness.
+The performances degradation heavily impacts the smoothness of trajectory of the laser dot. Playing with servos internal parameters we could try to find the right trade-off between precision and smoothness, but since the relative localization is based on the laser positions and the user following those positions, then we can not sacrifice too much either precision or smoothness.
 \subsubsection{Slow Communication Protocol}
 This is the main issue. This is only partially related with the communication speed of the motors. Of course, with a higher speed, we could afford to use a slower protocol. Anyway, solving that issue allows us to obtain the best from that turret, hitting its limits, but obtaining a system which could work well enough for our purposes. Since the solution is part of the software implementation, it will be presented in the next chapter.
 
 \subsection{Bioloid Bus Interface}
-\begin{figure}
+This board allows PC to communicate with Bioloid bus devices (e.g. Dynamixel AX-12) using a USB cable at speeds of up to 1.0 Mbps. In other words,
+this simple device provides serial communication between the PC and the motors. It is also needed to provide voltage to the motors. We can not use it to power up the laser as the output voltage is too high and there is no voltage regulator.
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=0.5\textwidth]{img/busInterface.jpg}%
 	\caption{Bioloid Bus Interface}
 	\label{fig:busInterface}
 \end{figure}
-This board allows PC to communicate with Bioloid bus devices (e.g. Dynamixel AX-12) using a USB cable at speeds of up to 1.0 Mbps. In other words,
-this simple device provides serial communication between the PC and the motors. It is also needed to provide voltage to the motors. We can not use it to power up the laser as the output voltage is too high and there is no voltage regulator.
 \subsection{Laser Diode and Arduino Uno Board}
-\begin{figure}
+We use a simple 5V red laser diode powered directly from an \emph{Arduino Uno Board}. We use that board because it provides a 5V output and thus is a simple and fast solution to power the laser up.
+\begin{figure}[h]
 \centering
 \begin{minipage}{.5\textwidth}
   \centering
@@ -73,39 +74,40 @@ this simple device provides serial communication between the PC and the motors. 
   \label{fig:diode}
 \end{minipage}
 \end{figure}
-We use a simple 5V red laser diode powered directly from an \emph{Arduino Uno Board}. We use that board because it provides a 5V output and thus is a simple and fast solution to power the laser up.
+\clearpage
 \subsection{Structural Parts}
-Figures \ref{fig:axFrames} shows the plastic frames used to assemble the turret. Figures \ref{fig:axMounting1} and \ref{fig:axMounting2} shows how they are attached to the motor. \todo{MOVE MOUNTING INSTRUCTIONS TO APPENDIX?}
+Figures \ref{fig:axFrames} shows the plastic frames used to assemble the turret. Mounting instructions can be found in the appendix. \todo{MOVE MOUNTING INSTRUCTIONS TO APPENDIX?}
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{img/axFrames.png}%
 	\caption{Plastic Frames}
 	\label{fig:axFrames}
 \end{figure}
-\begin{figure}
-	\centering
-	\includegraphics[width=\textwidth]{img/axMounting1.png}%
-	\caption{Mounting F2 Frame}
-	\label{fig:axMounting1}
-\end{figure}
-\begin{figure}
-	\centering
-	\includegraphics[width=\textwidth]{img/axMounting2.png}%
-	\caption{Mounting F3 Frame}
-	\label{fig:axMounting2}
-\end{figure}
+
 \section{Second Turret Model}\label{sec:turret64}
 \begin{figure}
 	\centering
-	\includegraphics[width=\textwidth]{img/mx64Turret.png}%
-	\caption{MX64 Turret}
-	\label{fig:mx64Turret}
+	\includegraphics[width=\textwidth]{img/model2Photo.png}%
+	\caption{Second Turret Model, Actual Photos}
+	\label{fig:model2Photo}
 \end{figure}
-As already mentioned, after we were able to get the best from the first model, we decided to base our system on a new and more powerful turret. In \ref{fig:mx64Turret} (DA SCATTARE) we can immediately see that there are some structural differences from the previous model, but those are already discussed in \ref{subs:secondModel}. Here, we want to discuss the new hardware, in particular motors and structural parts, which come from the ScorpionX MX-64 Robot Turret Kit by Interbotix \cite{MX64Turret}.
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/model23dsides.png}%
+	\caption{Second Turret 3D Model from Different Views}
+	\label{fig:model23D}
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/model23dCap.png}%
+	\caption{Second Turret 3D Model with Parts Names}
+	\label{fig:model23DCap}
+\end{figure}
+As already mentioned, after we were able to get the best from the first model, we decided to base our system on a new and more powerful turret. Looking at figure \ref{fig:model2Photo}, \ref{fig:model23D} and \ref{fig:model23DCap} (DA SCATTARE) we can immediately see that there are some structural differences from the previous model, but those are already discussed in \ref{subs:secondModel}. Here, we want to discuss the new hardware, in particular motors and structural parts, which come from the ScorpionX MX-64 Robot Turret Kit by Interbotix \cite{MX64Turret}.
 \subsection{Dynamixel MX-64T}
 Quoting from \cite{web-MX64}:\\
 \virgolette{\textit{The MX-64T Dynamixel Robot Servo Actuator is the newest generation of Robotis Dynamixel actuator; equipped with an onboard 32bit 72mhz Cortex M3, a contact-less magnetic encoder with 4x the resolution over the AX/RX series, and up to 3mpbs using the new TTL 2.0 bus. Each servo has the ability to track its speed, temperature, shaft position, voltage, and load. As if this weren't enough, the newly implemented PID control algorithm used to maintain shaft position can be adjusted individually for each servo, allowing you to control the speed and strength of the motor's response. All MX Series servos use 12v nominal voltage, so MX Dynamixels can be mixed without having to worry about separate power supplies. All of the sensor management and position control is handled by the servo's built-in microcontroller. This distributed approach leaves your main controller free to perform other functions.}}\\
-So, we already know that those motors are more powerful than the ones used for the first model. Moreover, they are also compatible. The result is that we were able to use the same software interface written for the first turret without any issues, obtaining a more reliable model in term of accuracy, precision and trajectory smoothness. That confirms that we were doing things right also with the first turret, but we were facing its physical/hardware limitations. The results with the new turret immediately proved to be so good that we did not try to directly exploit and tune the more sophisticated functions offered by the new motors, such as built-in PID controllers or faster communication.
+So, we already know that those motors are more powerful than the ones used for the first model. Moreover, they are also compatible. The result is that we can reuse the same software interface written for the first turret without any issues, obtaining a more reliable model in term of accuracy, precision and trajectory smoothness. That confirms that things are done right also with the first turret, but we are facing its physical/hardware limitations. The results with the new turret are considerably better even without directly exploiting and tuning the more sophisticated functions offered by the new motors, such as built-in PID controllers or faster communication.
 \subsection{Motor Specification}
 \begin{figure}
 	\centering
