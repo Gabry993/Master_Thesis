@@ -52,7 +52,7 @@ This is the main issue. It is only partially related with the communication spee
 \subsection{Bioloid Bus Interface}
 This board allows PC to communicate with Bioloid bus devices (e.g. Dynamixel AX-12) using a USB cable at speeds of up to 1.0 Mbps. In other words,
 this simple device provides serial communication between the PC and the motors. It is also needed to provide voltage to the motors. We can not use it to power up the laser as the output voltage is too high and there is no voltage regulator.
-\begin{figure}[h]
+\begin{figure}
 	\centering
 	\includegraphics[width=.5\textwidth]{img/bioloid.png}%
 	\caption{Bioloid Bus Interface}
@@ -141,10 +141,10 @@ As explained in \ref{sec:1.2}, we need an arm IMU device to reconstruct the dire
 \end{figure}
 \section{Kobuki}
 \virgolette{\textit{iClebo Kobuki is a low-cost mobile research base designed for education and research on state of art robotics. With continuous operation in mind, Kobuki provides power supplies for an external computer as well as additional sensors and actuators. Its highly accurate odometry, amended by our factory calibrated gyroscope, enables precise navigation.}} \cite{kobuki}.\\
-As already stated, one of the main application of our system is ground robot navigation. We developed a couple of demo using the \emph{Kobuki}, a groud robot suitable for our purposes. Note that we actually use a \emph{TurtleBot2}, but only its structure (i.e. \emph{Kobuki} base plus mounting platform). For example, we do not exploit the \emph{kinect} camera provided with the \emph{Turtlebot2}. Its structure is perfectly suitable to mount our turret on top of it (figure \ref{fig:kobukiTurret} and thus demonstrate our system.
+As already stated, one of the main application of our system is ground robot navigation. We developed a couple of demo using the \emph{Kobuki}, a groud robot suitable for our purposes. Note that we actually use a \emph{TurtleBot2}, but only its structure (i.e. \emph{Kobuki} base plus mounting platform). For example, we do not exploit the \emph{kinect} camera provided with the \emph{Turtlebot2}. Its structure is perfectly suitable to mount our turret on top of it (figure \ref{fig:kobukiTurret}) and thus demonstrate our system.
 \begin{figure}
 	\centering
-	\includegraphics[width=0.5\textwidth]{img/.jpg}%
-	\caption{Turtlebot2 (with Kobuki base)}
-	\label{fig:turtlebot}
+	\includegraphics[width=\textwidth]{img/kobukiHWLow.png}%
+	\caption{Turtlebot2 (with Kobuki base) and Our Turret}
+	\label{fig:kobukiTurret}
 \end{figure}
