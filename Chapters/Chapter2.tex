@@ -132,19 +132,19 @@ The structural parts are provided together with the ScorpionX MX-64 Robot Turret
 	\label{fig:mx64Pieces}
 \end{figure}
 \section{Arm IMU}
-As explained in \ref{sec:1.2}, we need an arm IMU device to reconstruct the direction of human pointing. First, we present the Myo Armband, \virgolette{\textit{a gesture recognition device worn on the forearm and manufactured by Thalmic Labs. The Myo enables the user to control technology wirelessly using various hand motions. It uses a set of electromyographic (EMG) sensors that sense electrical activity in the forearm muscles, combined with a gyroscope, accelerometer and magnetometer to recognize gestures.}}. Obviously, we are interested only into the functions provided by gyroscope, accelerometer and magnetometer. We used such an expensive and mostly unnecessary device because it was what we already had.\\ Lately, we moved to a cheaper and more suitable device, the MetaMotionR board by Mbientlab, which can be mounted on a wrist band and provides a 9-axis IMU with Sensor Fusion. This is more convenient for our purposes, as it is easier to setup (it has a bluetooth driver for linux), more comfortable to wear (it is just like a watch) and also provides a LED for colour feedback and a small button (both are useful for our experiments and demos).
+As explained in \ref{sec:1.2}, we need an arm IMU device to reconstruct the direction of human pointing. First, we present the Myo Armband, \virgolette{\textit{a gesture recognition device worn on the forearm and manufactured by Thalmic Labs. The Myo enables the user to control technology wirelessly using various hand motions. It uses a set of electromyographic (EMG) sensors that sense electrical activity in the forearm muscles, combined with a gyroscope, accelerometer and magnetometer to recognize gestures.}}. Obviously, we are interested only into the functions provided by gyroscope, accelerometer and magnetometer. We used such an expensive and mostly unnecessary device because it was what we already had.\\ However, our later work is based on a cheaper and more suitable device, the MetaMotionR board by Mbientlab, which can be mounted on a wrist band and provides a 9-axis IMU with Sensor Fusion. This is more convenient for our purposes, as it is easier to setup (it has a bluetooth driver for linux), more comfortable to wear (it is just like a watch) and also provides a LED for colour feedback and a small button (both are useful for our experiments and demos).
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{img/IMUS.png}%
-	\caption{IMU Devices: \emph{Left}: Myo Armband. \emph{Right:} MetaMotionR Wrist Band.}
+	\caption{\tetbf{IMU Devices:} \emph{Left}: Myo Armband. \emph{Right:} MetaMotionR Wrist Band.}
 	\label{fig:IMUS}
 \end{figure}
 \section{Kobuki}
 \virgolette{\textit{iClebo Kobuki is a low-cost mobile research base designed for education and research on state of art robotics. With continuous operation in mind, Kobuki provides power supplies for an external computer as well as additional sensors and actuators. Its highly accurate odometry, amended by our factory calibrated gyroscope, enables precise navigation.}} \cite{kobuki}.\\
-As already stated, one of the main application of our system is ground robot navigation. We developed a couple of demo using the \emph{Kobuki}, a groud robot suitable for our purposes. Note that we actually use a \emph{TurtleBot2}, but only its structure (i.e. \emph{Kobuki} base plus mounting platform). For example, we do not exploit the \emph{kinect} camera provided with the \emph{Turtlebot2}. Its structure is perfectly suitable to mount our turret on top and thus demonstrate our system.
+As already stated, one of the main application of our system is ground robot navigation. We developed a couple of demo using the \emph{Kobuki}, a groud robot suitable for our purposes. Note that we actually use a \emph{TurtleBot2}, but only its structure (i.e. \emph{Kobuki} base plus mounting platform). For example, we do not exploit the \emph{kinect} camera provided with the \emph{Turtlebot2}. Its structure is perfectly suitable to mount our turret on top of it (figure \ref{fig:kobukiTurret} and thus demonstrate our system.
 \begin{figure}
 	\centering
-	\includegraphics[width=0.5\textwidth]{img/turtlebot.jpg}%
+	\includegraphics[width=0.5\textwidth]{img/.jpg}%
 	\caption{Turtlebot2 (with Kobuki base)}
 	\label{fig:turtlebot}
 \end{figure}
