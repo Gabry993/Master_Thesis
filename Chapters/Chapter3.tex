@@ -149,9 +149,9 @@ To obtain that transformation we iteratively call the optimization procedure con
 	\rho = [0, 0, 0, 0] \nonumber
 \end{align}
 and then try to reduce the error as defined in equation \ref{eq:error}, by sampling each pairs in a random order and updating $\rho$ accordingly.\\
-In the end, we publish the transform of the laser dot into the human frame for a fixed time window (usually $60s$), leveraging on the functions provided by \textbf{tf}.
+In the end, we publish the transform of the turret into the human frame for a fixed time window (usually $60s$), leveraging on the functions provided by \texttt{tf}.
 \section{System Complete Pipeline}
-Now we finally have all the elements to understand the entire system pipeline, from the turret to the relloc. Figure \ref{fig:systemBigPicture} shows a schematic. We can see that the turret draws a trajectory, the human follows that trajectory with pointing gestures. The system then puts together each laser point with each pointing ray and computes the relative localization.
+Now we finally have all the elements to understand the entire system pipeline, from the turret to the relloc. Figure \ref{fig:systemBigPicture} shows a schematic with all the involved modules. We can see that the turret draws a trajectory, the human follows that trajectory with pointing gestures. The system then puts together each laser point with each pointing ray and computes the relative localization. Once the relloc is estimated, it can be used for different applications, as we show with demos and experiments.
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{img/systemPipeline.png}%
