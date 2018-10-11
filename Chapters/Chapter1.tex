@@ -19,7 +19,7 @@ Our final goal is to be able to define the direction of a laser ray mounted on t
 For those purposes, we have built two different turrets. Since the model of the first one is slightly simpler than the second, we will start describing the former, which turns out to be helpful to understand the latter. We will focus on the case in which the laser must be projected on the ground.
 
 \subsection{First Model}\label{subs:firstModel}
-First, figures \ref{fig:model1FrameCap} helps to understand how the model is shaped to match the physical structure of the turret. We have three reference frames. The \textbf{base\_frame} is fixed and is the one in which we define the coordinates of the projected point. \textbf{pan\_frame} and \textbf{tilt\_frame} are the frames used to represent our revolute joints.
+First, figures \ref{fig:firstModelRefFrame} helps to understand how the model is shaped to match the physical structure of the turret. We have three reference frames. The \textbf{base\_frame} is fixed and is the one in which we define the coordinates of the projected point. \textbf{pan\_frame} and \textbf{tilt\_frame} are the frames used to represent our revolute joints.
 \textbf{H} is the height of the turret, which is known. Note that the convention used for the frame is the following:
 \begin{itemize}
     \item red is the x axis;
@@ -51,7 +51,7 @@ We can easily obtain laser point coordinates:
 	\centering
 	\includegraphics[width=\textwidth]{img/model1Ref.png}%
 	\caption{First Model, Reference Frames Explained}
-	\label{fig:model1FrameCap}
+	\label{fig:firstModelRefFrame}
 \end{figure}
 
 \begin{figure}
@@ -80,7 +80,7 @@ Finally, thanks to equations \ref{eq:x} and \ref{eq:y} we can immediately obtain
 \subsection{Second Model} \label{subs:secondModel}
 \begin{figure}
 	\centering
-	\includegraphics[width=\textwidth]{img/model2Ref.png}%
+	\includegraphics[width=\textwidth]{img/model2Refbis.png}%
 	\caption{Second Model, Reference Frames Explained}
 	\label{fig:secondModelRefFrame}
 \end{figure}
