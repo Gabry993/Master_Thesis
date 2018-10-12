@@ -100,7 +100,7 @@ Figure \ref{fig:kgtgSetup} shows the setup of the demo: we have the user wearing
 \end{itemize}
 Figure \ref{fig:kgtgGoal} gives also a qualitative feedback: the user is able to drive the kobuki through the cones easily and precisely.
 \subsection{Kobuki Follow Trajectory Application}
-Here we add another step to the previous go to goal application: now, by pointing for three seconds, users mark the begin of a trajectory. Then, they can draw an entire trajectory (figure \ref{fig:kftTrajecotory} and finally, pointing again the same point for three seconds, set the end point. After that, the kobuki will follow the trajectory. Note how bad that trajectory can look again in figure \ref{fig:kftTrajectory}. In that case, the user was drawing very slowly and with scarce accuracy. Anyway, by sampling that trajectory discarding points too close to each others, the kobuki was able to move around the two cones flawlessly.\\
+Here we add another step to the previous go to goal application: now, by pointing for three seconds, users mark the begin of a trajectory. Then, they can draw an entire trajectory (figure \ref{fig:kftTrajecotory} and finally, pointing again the same point for three seconds, set the end point. After that, the kobuki will follow the trajectory. Note how bad that trajectory can look again in figure \ref{fig:kftTrajectory}. In that case, the user was drawing very slowly and with scarce accuracy. Anyway, by sampling that trajectory discarding points too close to each others, the kobuki was able to move around the two cones flawlessly (figure \ref{fig:kftFollowing}).\\
 Just to sum up, here all all the step composing the application:
 \begin{itemize}
     \item the user does the relloc (as in figure \ref{fig:kgtgRelloc});
@@ -108,7 +108,7 @@ Just to sum up, here all all the step composing the application:
     \item the user points for three seconds the place he wants the kobuki to start the trajectory;
     \item after an audio feedback, the user can draw the trajectory. (figure \ref{fig:kftTrajectory});
     \item the user points for three seconds the place he wants the kobuki to end the trajectory;
-    \item after an audio feedback which confirms the acquisition, the kobuki moves following that trajectory.
+    \item after an audio feedback which confirms the acquisition, the kobuki moves following that trajectory (figure \ref{fig:kftFollowing}).
 \end{itemize}
 \begin{figure}
 	\centering
@@ -139,4 +139,10 @@ Just to sum up, here all all the step composing the application:
 	\includegraphics[width=.7\textwidth]{img/kftTrajectory.png}%
 	\caption{Kobuki Follow Trajectory: User's Trajectory}
 	\label{fig:kgtgGoal}
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/kftFollowing.png}%
+	\caption{Kobuki Follow Trajectory: Kobuki Following Trajectory}
+	\label{fig:kftFollowing}
 \end{figure}
