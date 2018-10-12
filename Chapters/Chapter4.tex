@@ -62,7 +62,7 @@ In that way we can have an immediate visible the result: the nearer the turret i
 	\centering
 	\includegraphics[width=\textwidth]{img/rellocExpSetup.png}%
 	\caption{Relloc Experiment Setup}
-	\label{fig:pointingExpSetup}
+	\label{fig:rellocExpSetup}
 \end{figure}
 
 \subsection{Goals}
@@ -87,7 +87,7 @@ As already mentioned, we explored a couple of applications for our system. One c
 	\label{fig:rellocDemoPhoto}
 \end{figure}
 However, in that section will we present two entire human-robot interaction scenarios involving a ground robot (the kobuki) as well as the turret.\\
-A video containing both of them is available at \todo{ref al video}
+A video containing both of them is available online \footnote{\url{https://youtu.be/hyh_5A4RXZY?t=85}}.
 
 \subsection{Kobuki Go to Goal Application}
 The original relloc system was applied to control a flying robot \cite{gromov2018robot}. In that context, the feedback user had while controlling the drone with pointing consisted of the drone itself. However, that approach is not suitable for a slow moving ground robot, as the kobuki. Here the turret system developed for this thesis comes in play: mounting it on top of the kobuki, we can face the mobile robot navigation task in a convenient way.\\
@@ -100,7 +100,7 @@ Figure \ref{fig:kgtgSetup} shows the setup of the demo: we have the user wearing
 \end{itemize}
 Figure \ref{fig:kgtgGoal} gives also a qualitative feedback: the user is able to drive the kobuki through the cones easily and precisely.
 \subsection{Kobuki Follow Trajectory Application}
-Here we add another step to the previous go to goal application: now, by pointing for three seconds, users mark the begin of a trajectory. Then, they can draw an entire trajectory (figure \ref{fig:kftTrajecotory} and finally, pointing again the same point for three seconds, set the end point. After that, the kobuki will follow the trajectory. Note how bad that trajectory can look again in figure \ref{fig:kftTrajectory}. In that case, the user was drawing very slowly and with scarce accuracy. Anyway, by sampling that trajectory discarding points too close to each others, the kobuki was able to move around the two cones flawlessly (figure \ref{fig:kftFollowing}).\\
+Here we add another step to the previous go to goal application: now, by pointing for three seconds, users mark the begin of a trajectory. Then, they can draw an entire trajectory (figure \ref{fig:kftTrajectory} and finally, pointing again the same point for three seconds, set the end point. After that, the kobuki will follow the trajectory. Note how bad that trajectory can look again in figure \ref{fig:kftTrajectory}. In that case, the user was drawing very slowly and with scarce accuracy. Anyway, by sampling that trajectory discarding points too close to each others, the kobuki was able to move around the two cones flawlessly (figure \ref{fig:kftFollowing}).\\
 Just to sum up, here all all the step composing the application:
 \begin{itemize}
     \item the user does the relloc (as in figure \ref{fig:kgtgRelloc});
@@ -119,7 +119,7 @@ Just to sum up, here all all the step composing the application:
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{img/kgtgRelloc2.png}%
-	\caption{Kobuki Go to Goal: User doing the Relloc. The laser shape trajectory is made visible.}
+	\caption[Kobuki Go to Goal: User doing the Relloc]{Kobuki Go to Goal: User doing the Relloc. The laser shape trajectory is made visible.}
 	\label{fig:kgtgRelloc}
 \end{figure}
 \begin{figure}
@@ -138,7 +138,7 @@ Just to sum up, here all all the step composing the application:
 	\centering
 	\includegraphics[width=.7\textwidth]{img/kftTrajectory.png}%
 	\caption{Kobuki Follow Trajectory: User's Trajectory}
-	\label{fig:kgtgGoal}
+	\label{fig:kftTrajectory}
 \end{figure}
 \begin{figure}
 	\centering

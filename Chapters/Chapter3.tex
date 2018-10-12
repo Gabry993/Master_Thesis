@@ -11,14 +11,15 @@ Experiment setups and procedures are left for chapter \ref{chap:4}.
 \section{Libraries and Frameworks}
 The system developed is composed by many modules handling different functionalities. It is worth to mention a couples of libraries and frameworks which are widely used throughout the project, as some of them are also primary to understand the implementation. In the next section we will give an overview of:
 \begin{itemize}
-	\item \ac{ROS} Kinetic Kame
-	\subitem \texttt{rospy} 1.12.13
-	\subitem \texttt{rosbag} 1.12.13
+	\item \ac{ROS} Kinetic
+	\subitem \texttt{rospy} 1.12.14
+	\subitem \texttt{rosbag} 1.12.14
 	\subitem \texttt{tf} 1.11.9
+	\subitem \texttt{rviz} 1.12.16
 	\item \texttt{Dynamixel Workbench} and \texttt{Dynamixel SDK}
-	\item \texttt{NumPy} 1.14.3
-	\item \textttt{Matplotlib} 2.2.2
-	\item \texttt{pandas} 0.23.0
+	\item \texttt{NumPy} 1.14.4
+	\item \texttt{Matplotlib} 1.5.1
+	\item \texttt{pandas} 0.23.3
 \end{itemize}
 The programming language used for development is Python 2.7.12.\\
 
@@ -57,6 +58,10 @@ Designed with efficiency in mind, the \texttt{tf} library has been used to manag
 \subsubsection*{Bags}
 Another function of \ac{ROS}, are \lstinline|rosbag| files. Bags are a format for saving and playing back ROS message data. Bags are an important mechanism for storing data, such as sensor data, that can be difficult to collect but is necessary for developing and testing algorithms.
 
+\subsubsection*{ROS Visualization: rviz}
+\texttt{rviz} is a 3D visualizer for displaying sensor data and state information from ROS. Using rviz, one can visualize virtual model and configuration of the robot configuration. One can also display live representations of sensor values coming over ROS Topics including camera data, infrared distance measurements, sonar data, and more.
+
+That tool is helpful as it allows to simulate the system without having to move the real hardware. In that way one can asses the correctness of algorithm etc. etc.. Of course, that does not guarantee that in the real world thing are going to work, but this is what robotic is all about!
 
 \subsection{Dynamixel SKD}
 The \texttt{ROBOTIS Dynamixel SDK} is a software development kit that provides Dynamixel control functions using packet communication. The API of Dynamixel SDK is designed for Dynamixel actuators and Dynamixel-based platforms. It is based on C/C++ programming. The Dynamixel SDK supports all Dynamixel series developed by \texttt{ROBOTIS}. For example, all series such as AX, RX, EX, MX, XL, XM, XH, PRO-L, PRO-M and PRO-H are supported by packet communication.
@@ -64,7 +69,7 @@ The \texttt{ROBOTIS Dynamixel SDK} is a software development kit that provides D
 	\centering
 	\includegraphics[width=\textwidth]{img/sdk.jpg}%
 	\caption{Dynamixel SDK}
-	\label{fig:turretPipeline}
+	\label{fig:dynamixelSDK}
 \end{figure}
 
 \subsection{Dynamixel Workbench}

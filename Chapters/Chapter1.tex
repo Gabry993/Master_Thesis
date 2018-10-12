@@ -76,7 +76,6 @@ Finally, thanks to equations \ref{eq:x} and \ref{eq:y} we can immediately obtain
 \begin{align}
 	pan=& \arctan\bigg(\frac{y}{x}\bigg)\label{eq:panik}
 \end{align}
-\\
 \subsection{Second Model} \label{subs:secondModel}
 \begin{figure}
 	\centering
@@ -115,7 +114,6 @@ Finally,
 	tilt2 =& \arctan\bigg(\frac{D}{T}\bigg)\\
 	tilt =& tilt1 + tilt2
 \end{align}
-\\
 \section{Human Pointing Model} \label{sec:1.2}
 \begin{figure}
 	\centering
@@ -124,9 +122,8 @@ Finally,
 	\label{fig:pointingModel}
 \end{figure}
 The approach we follow to model human pointing is the one used in \cite{gromov2018robot}. \\
-The \emph{head-finger} model defines human pointing rays as originating at a centroid of the head and passing through the index fingertip. Figure \ref{fig:pointingModel} shows the model, figure \ref{fig:pointingCap} shows an explanation photo.\\
-The reference frame \textbf{human\_footprint} is located at the human feet with the \emph{x}-axis pointing forward, \emph{y}-axis to the left, and \emph{z}-axis pointing up. The pointing ray is a 3D half-line on which the point that the human intends to indicate lies. So, our goal is to intersect that line with the floor (i.e. the \emph{xy}-plane of \textbf{human\_footprint} frame) in order to get the point indicated by the user. To do so, we get pointing rays using orientation readings from a wearable IMU. Once we have that, we can compute the intersection of those rays with the ground as a simple \emph{line-plane} intersection, as explained in \cite{O'Rourke:1998:CGC:289380}.
-\\
+The \emph{head-finger} model defines human pointing rays as originating at a centroid of the head and passing through the index fingertip. Figure \ref{fig:pointingModel} shows both the model and an explanation photo.\\
+The reference frame \textbf{human\_footprint} is located at the human feet with the \emph{x}-axis pointing forward, \emph{y}-axis to the left, and \emph{z}-axis pointing up. The pointing ray is a 3D half-line on which the point that the human intends to indicate lies. So, our goal is to intersect that line with the floor (i.e. the \emph{xy}-plane of \textbf{human\_footprint} frame) in order to get the point indicated by the user. To do so, we get pointing rays using orientation readings from a wearable IMU. Once we have that, we can compute the intersection of those rays with the ground as a simple \emph{line-plane} intersection, as explained in \cite{O'Rourke:1998:CGC:289380}.\\
 
 Consider a line \textbf{L} given by its parametric equation:
 \begin{align}
@@ -145,7 +142,7 @@ Solving \ref{eq:dot} we obtain the intersect point $P(s_I)$:
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{img/pointingRelloc.png}%
-	\caption{\emph{Left}, Phase 1: the operator points at the laser he want to interact with; an explicit (button press) event triggers the beginning of the interaction. \emph{Center}, Phase 2: the laser dot start moving along a paths, and the human keeps pointing at it; the system acquires a set of pairs each composed by: a pointing ray \emph{r} in the operator’s frame of reference $\{H\}$; a point $P$ in the turret’s fixed base frame $\{B\}$. \emph{Right}: after a few seconds the system has reconstructed the transformation $T^*$ linking $\{H\}$ and $\{R\}$: pointing rays can be known in the turret frame, and the interaction can continue in an application-dependent way.}
+	\caption[Relloc Model]{\emph{Left}, Phase 1: the operator points at the laser he want to interact with; an explicit (button press) event triggers the beginning of the interaction. \emph{Center}, Phase 2: the laser dot start moving along a paths, and the human keeps pointing at it; the system acquires a set of pairs each composed by: a pointing ray \emph{r} in the operator’s frame of reference $\{H\}$; a point $P$ in the turret’s fixed base frame $\{B\}$. \emph{Right}: after a few seconds the system has reconstructed the transformation $T^*$ linking $\{H\}$ and $\{R\}$: pointing rays can be known in the turret frame, and the interaction can continue in an application-dependent way.}
 	\label{fig:rellocExplained}
 \end{figure}
 The relative localization procedure goal is to estimate the pose (position and orientation) of the turret's frame in the reference frame of the human. The approach we use is the one proposed in \cite{gromov2018robot}.\\

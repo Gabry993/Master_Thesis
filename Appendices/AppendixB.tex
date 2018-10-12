@@ -1,228 +1,476 @@
-\chapter{Other Listings}
+\chapter{Code Listings}
 \label{Appen:B}
-Other listings excluded from the text for better readability.
-\subsection*{\texttt{find\_nearest} method}
-\begin{lstlisting}[caption={Find Nearest function},label={lst:nearest},language=Python]
-def find_nearest(array, value):
-	"""
-		find nearest value in array
-	Args:
-		array: array of values
-	value: reference value
-	
-	Returns:
-		min index of nearest array's element to value
-	"""
-	return (np.abs(array - value)).argmin()
+Here we report some important code listings. Note that none of them was included in the document for readability reasons. The entire code is available online \footnote{\url{INSERT REPO HERE}}. Note that here we refer only to the second turret model.
+\section*{tf\_broadcaster Module}\label{sec:tfbroadcaster}
+\subsection*{publish\_tf\_tree Method}
+This method publishes each frame composing the turret model exploiting the \texttt{tf} library. So, this the internal representation the system has of the turret. In other words, this is what moves our \virgolette{virtual} model.
+\begin{lstlisting}[caption={Publish Turret tf Tree},label={lst:tftree},language=Python]
+def publish_tf_tree(self, pan, tilt):
+    self.br.sendTransform((0, 0, self.dz_to_motor_1_flange),
+                     tf.transformations.quaternion_from_euler(0, 0, pan),
+                     rospy.Time.now(), "pan_link", "base_link")
+    self.br.sendTransform((0, 0, self.dz_to_motor_2_flange),
+                     tf.transformations.quaternion_from_euler(np.pi/2, -np.pi/2, 0),
+                     rospy.Time.now(), "tilt_link", "pan_link")
+    self.br.sendTransform((0, 0, 0),
+                     tf.transformations.quaternion_from_euler(0, 0, tilt - np.pi/2),
+                     rospy.Time.now(), "laser_pointer_link", "tilt_link")
+    self.br.sendTransform((0.075, 0, 0),
+                     tf.transformations.quaternion_from_euler(0, 0, -np.pi/2),
+                     rospy.Time.now(), "laser_link", "laser_pointer_link")
+    self.br.sendTransform((5.0, 0, 0),
+                     tf.transformations.quaternion_from_euler(0, 0, 0),
+                     rospy.Time.now(),
+                     "debug_link", "laser_link")
+    self.rate.sleep()
 \end{lstlisting}
-\subsection*{\texttt{change\_frame\_reference} method}
-\begin{lstlisting}[caption={Change frame of reference},label={lst:changeframe},language=Python]
-def change_frame_reference(pose_bebop, pose_head):
-	"""
-		Change frame of reference of pose head from World to bebop.
-	
-	Args:
-		pose_bebop: pose of the bebop
-		pose_head: pose of the head
-	
-	Returns:
-		the new pose for head:
-			bebop
-				T
-				head
-	"""
-	position_bebop = pose_bebop[['b_pos_x', 'b_pos_y', 'b_pos_z']].values
-	quaternion_bebop = pose_bebop[['b_rot_w', 'b_rot_x', 'b_rot_y', 'b_rot_z']].values
-	position_head = pose_head[['h_pos_x', 'h_pos_y', 'h_pos_z']].values
-	quaternion_head = pose_head[['h_rot_w', 'h_rot_x', 'h_rot_y', 'h_rot_z']].values
-	w_t_b = rospose2homogmat(position_bebop, quaternion_bebop)
-	w_t_h = rospose2homogmat(position_head, quaternion_head)
-	b_t_w = np.linalg.inv(w_t_b)
-	b_t_h = np.matmul(b_t_w, w_t_h)
-	
-	return b_t_h
+\subsection*{ik Method}
+Given a 3D $(x, y, z)$ point, that method computes the inverse kinematic and return the corresponding pan and tilt values.
+\begin{lstlisting}[caption={Inverse Kinematic},label={lst:ik},language=Python]
+def ik(self, x, y, z):
+        pan = np.math.atan2(y, x)
+        dz = self.dz_to_motor_1_flange + self.dz_to_motor_2_flange - z
+        b = np.math.sqrt(x**2 + y**2)
+        c = np.math.sqrt(dz**2 + b**2)
+        tilt1 = np.math.atan2(b, dz)
+        tilt2= np.math.atan2(c, 0.075)
+        tilt = -np.pi/2+ tilt1 + tilt2
+        return pan, tilt
 \end{lstlisting}
-\subsection*{\texttt{VideoCreator} Class}
-\begin{lstlisting}[caption={Video creator class},label={lst:videocreator},language=Python]
-class VideoCreator:
-	def __init__(self, b_orientation, distances, b_position, frame_list, h_orientation, h_position, delta_z, f, title="test.avi"):
-		"""
-			Initializer for the class
-		Args:
-			distances: list of distance user-drone
-			b_orientation: bebop orientation array
-			b_position: bebop position array
-			frame_list: camera frame list
-			h_orientation: head orientation array
-			h_position: head orientation array
-			delta_z: height difference list
-			f: bag file name
-			title: video file name
-		"""
-		self.fps = 30
-		self.f = f
-		self.video_writer = cv2.VideoWriter(title, cv2.VideoWriter_fourcc(*'XVID'), self.fps, (640, 480))
-		self.b_orientation = b_orientation
-		self.b_position = b_position
-		self.frame_list = frame_list
-		self.h_orientation = h_orientation
-		self.h_position = h_position
-		self.distances = distances
-		self.delta_z = delta_z
-	
-	def plotting_function(self, i):
-		"""
-			Given an index compose the frame for the video.
-		Args:
-			i: frame number
-		"""
-		fig = plt.figure()
-		fig.suptitle("Frame: " + str(i), fontsize=12)
-		axll = fig.add_subplot(2, 2, 1)
-		axl = fig.add_subplot(2, 2, 2)
-		axc = fig.add_subplot(2, 2, 3)
-		axr = fig.add_subplot(2, 2, 4)
-		canvas = FigureCanvas(fig)
-		
-		# Central image: here we add the camera feed to the video
-		img = Image.open(io.BytesIO(self.frame_list[i]))
-		raw_frame = list(img.getdata())
-		frame = []
-		for b in raw_frame:
-		frame.append(b)
-		reshaped_fr = np.reshape(np.array(frame, dtype=np.int64), (480, 856, 3))
-		reshaped_fr = reshaped_fr.astype(np.uint8)
-		axc.imshow(reshaped_fr)
-		axc.set_axis_off()
-		
-		# RIGHT PLOT: here we create the right plot that represent the position and heading of the bebop and head
-		axr.axis([-2.4, 2.4, -2.4, 2.4], 'equals')
-		h_theta = quat_to_eul(self.h_orientation[i])[2]
-		b_theta = quat_to_eul(self.b_orientation[i])[2]
-		arrow_length = 0.3
-		spacing = 1.2
-		minor_locator = MultipleLocator(spacing)
-		# Set minor tick locations.
-		axr.yaxis.set_minor_locator(minor_locator)
-		axr.xaxis.set_minor_locator(minor_locator)
-		# Set grid to use minor tick locations.
-		axr.grid(which='minor')
-		axr.plot(self.b_position[i].x, self.b_position[i].y, "ro", self.h_position[i].x, self.h_position[i].y, "go")
-		axr.arrow(self.h_position[i].x, self.h_position[i].y, arrow_length * np.cos(h_theta), arrow_length * np.sin(h_theta), head_width=0.05, head_length=0.1, fc='g', ec='g')
-		axr.arrow(self.b_position[i].x, self.b_position[i].y, arrow_length * np.cos(b_theta), arrow_length * np.sin(b_theta), head_width=0.05, head_length=0.1, fc='r', ec='r')
-		
-		# LEFT PLOT: here we represent the distance on the y axis and the heading correction for the drone in degrees on the x-axis
-		r_t_h = matrix_method(self.b_position[i], self.b_orientation[i], self.h_position[i], self.h_orientation[i])
-		horizontal_angle = -math.degrees(math.atan2(r_t_h[1, 3], r_t_h[0, 3]))
-		
-		value_angle_axis = 45
-		axl.set_xlim(-value_angle_axis, value_angle_axis)
-		axl.set_ylim(0.1, 3)
-		axl.set_xlabel('Angle y')
-		axl.set_ylabel('Distance')
-		axl.plot(horizontal_angle, self.distances[i], 'go')
-		
-		axll.set_xlim(-value_angle_axis, value_angle_axis)
-		axll.set_ylim(-1, 1)
-		axll.set_xlabel('Angle y')
-		axll.set_ylabel('Delta z')
-		axll.plot(horizontal_angle, self.delta_z[i], 'go')
-		# Drawing the plot
-		canvas.draw()
-		
-		# some additional informations as arrows
-		width, height = (fig.get_size_inches() * fig.get_dpi()).astype(dtype='int32')
-		img = np.fromstring(canvas.tostring_rgb(), dtype='uint8').reshape(height, width, 3)
-		img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-		pt1 = (275, 40)
-		pt2 = (375, 40)
-		if horizontal_angle >= 0:
-			cv2.arrowedLine(img, pt1, pt2, (0, 0, 255), 3)
-		else:
-			cv2.arrowedLine(img, pt2, pt1, (0, 0, 255), 3)
-		
-		pt3 = (25, 175)
-		pt4 = (25, 225)
-		if self.distances[i] < 1.5:
-			cv2.arrowedLine(img, pt3, pt4, (0, 255, 0), 3)
-		else:
-			cv2.arrowedLine(img, pt4, pt3, (0, 255, 0), 3)
-		
-		self.video_writer.write(img)
-		plt.close(fig)
-	
-	def video_plot_creator(self):
-		"""
-			calls frame composers for every frame
-			complete video creation
-		"""
-		max_ = len(self.frame_list)
-		for i in tqdm.tqdm(range(0, max_)):
-			self.plotting_function(i)
-		self.video_writer.release()
-		cv2.destroyAllWindows()
-\end{lstlisting}
-\subsection*{\texttt{keras\_train} Script}
-%\lstinputlisting[caption={\texttt{keras\_train} Script},label={lst:kerastrain},language=Python]{code/kerastrain.py}
-\subsection*{\texttt{keras\_crossvalidation} Script}
-%\lstinputlisting[caption={\texttt{keras\_crossvalidation} Script},label={lst:kerascross},language=Python]{code/kerascrossvalidation.py}
-\subsection*{\texttt{model\_creator} Script}
-%\lstinputlisting[caption={\texttt{model\_creator} Script},label={lst:modelcreator},language=Python]{code/modelcreator.py}
-\subsection*{\texttt{bag\_to\_pickle} Method}
-\begin{lstlisting}[caption={Extract that shows the method \text{bag\_to\_pickle}},label={lst:bagtopickle},language=Python]
-def bag_to_pickle(f):
-"""
-Core method used to transforms and saves a bag file into a .pickle dataset file
-Args:
-f: file name e.g. "7.bag"
-"""
-path = bag_file_path[f[:-4]]
-print("\nreading bag: " + str(f))
-datacr = DatasetCreator()
-with rosbag.Bag(path + f) as bag:
-bag_df_dict = get_bag_data_pandas(bag)
-data_vec = processing(bag_df_dict=bag_df_dict, data_id=f[:-4], f=f)
-datacr.generate_data(data_vec=data_vec)
-datacr.save_dataset(flag_train="cross", title=f[:-4] + ".pickle")
+\subsection*{update\_target\_pose\_point Method}
+This is a ROS topic callback used to update the turret model each time a new target (laser) point is received. Note that, depending on the system state, different transformation could be required to compute the correct point, as we can see in the code. In any case, we end up calling the \texttt{publish\_joint\_state} method (see next section) to send the goal pan and tilt angles to the turret controller interface. We also publish a laser marker in our simulation environment (\texttt{rviz}) for debug purposes (e.g. when things go bad, we can see if they were right at least in the simulator).
+\begin{lstlisting}[caption={Update Target Pose Point},label={lst:updatetargetpose},language=Python]
+def update_target_pose_point(self, msg):
+    if self.state == "following_arm":
+        self.stamped_point = PointStamped()
+        self.stamped_point.header = msg.header
+        self.stamped_point.header.stamp = rospy.Time()
+        self.stamped_point.point = msg.pose.position
+        self.target_point = self.tf.transformPoint("base_link", self.stamped_point)
+        self.pan_angle, self.tilt_angle = self.ik(self.target_point.point.x, self.target_point.point.y, self.target_point.point.z)
+        self.br.sendTransform((self.target_point.point.x, self.target_point.point.y, self.target_point.point.z),
+                         tf.transformations.quaternion_from_euler(0, 0, 0),
+                         rospy.Time.now(),
+                         "debug_point",
+                         "base_link")
 
-print("\nCompleted pickle " + str(f[:-4]))
+        laser_marker = self.create_laser_marker(self.target_point.point)
+        self.publish_joint_state(self.pan_angle, self.tilt_angle)
+        self.marker_pub.publish(laser_marker)
+    elif self.state == "marking_kobuki_goal":
+        self.stamped_point = self.kobuki_goal
+        self.stamped_point.header.stamp = rospy.Time()
+        self.target_point = self.tf.transformPoint("base_link", self.stamped_point)
+        self.pan_angle, self.tilt_angle = self.ik(self.target_point.point.x, self.target_point.point.y, self.target_point.point.z)
+        self.br.sendTransform((self.target_point.point.x, self.target_point.point.y, self.target_point.point.z),
+                         tf.transformations.quaternion_from_euler(0, 0, 0),
+                         rospy.Time.now(),
+                         "debug_point",
+                         "base_link")
+        laser_marker = self.create_laser_marker(self.target_point.point)
+        
+        self.publish_joint_state(self.pan_angle, self.tilt_angle)
+        self.marker_pub.publish(laser_marker)
+    elif self.state == "marking_relloc":
+        try:
+            (trans,rot) = self.listener.lookupTransform('base_link', 'human_footprint', rospy.Time(0))
+        except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+            pass
+        self.target_point.point.x = trans[0]
+        self.target_point.point.y = trans[1]
+        self.target_point.point.z = trans[2]
+        self.relloc_human_pos_pub.publish(self.target_point)
+        self.pan_angle, self.tilt_angle = self.ik(self.target_point.point.x, self.target_point.point.y, self.target_point.point.z)
+        self.br.sendTransform((self.target_point.point.x, self.target_point.point.y, self.target_point.point.z),
+                         tf.transformations.quaternion_from_euler(0, 0, 0),
+                         rospy.Time.now(),
+                         "debug_point",
+                         "base_link")
+        laser_marker = self.create_laser_marker(self.target_point.point)
+
+        self.publish_joint_state(self.pan_angle, self.tilt_angle)
+        self.marker_pub.publish(laser_marker)
 \end{lstlisting}
-\subsection*{\texttt{processing} Method}
-\begin{lstlisting}[caption={\texttt{processing}} method,label={lst:processing},language=Python]
-def processing(bag_df_dict, data_id, f):
-"""
-Process data from dictionary bag_df_dict into a data vector
-Args:
-bag_df_dict: dictionary of Pandas dataframes
-data_id: id of the bag file processed
-f: bag file name, used as key for dictionary
-Returns:
-data vector: vector of tutples (image, (targe_x, target_y, target_z, target_relative_yaw)
-"""
-camera_t = bag_df_dict["camera_df"].index.values
-bebop_t = bag_df_dict["bebop_df"].index.values
-head_t = bag_df_dict["head_df"].index.values
-data_vec = []
-max_ = bag_end_cut[f[:-4]]
-min_ = bag_start_cut[f[:-4]]
-for i in tqdm.tqdm(range(min_, max_), desc="processing data " + str(data_id)):
-b_id = find_nearest(bebop_t, camera_t[i])
-h_id = find_nearest(head_t, camera_t[i])
-head_pose = bag_df_dict["head_df"].iloc[h_id]
-bebop_pose = bag_df_dict["bebop_df"].iloc[b_id]
-img = bag_df_dict["camera_df"].iloc[i].values[0]
-b_t_h = change_frame_reference(bebop_pose, head_pose)
-quaternion_bebop = bebop_pose[['b_rot_x', 'b_rot_y', 'b_rot_z', 'b_rot_w']].values
-quaternion_head = head_pose[['h_rot_x', 'h_rot_y', 'h_rot_z', 'h_rot_w']].values
-_, _, head_yaw = quat_to_eul(quaternion_head)
-_, _, bebop_yaw = quat_to_eul(quaternion_bebop)
-relative_yaw = (head_yaw - bebop_yaw - np.pi)
-if relative_yaw < -np.pi:
-relative_yaw += 2 * np.pi
-target_position = b_t_h[:-1, -1:].T[0]
-target = (target_position[0], target_position[1], target_position[2], relative_yaw)
-data_vec.append((img, target))
-return data_vec
+\subsection*{publish\_joint\_state Method} \label{publishJointState}
+Method to publish pan and tilt values through standard ROS \texttt{JointState} messages on a topic. In that way, the node that actually moves the motor can subscribe to that topic and perform the action.
+\begin{lstlisting}[caption={Publish Joint State},label={lst:publishjointstate},language=Python]
+def publish_joint_state(self, pan, tilt):
+    joint_state_msg = JointState()
+    joint_state_msg.header = Header()
+    joint_state_msg.header.stamp = rospy.Time.now()
+    joint_state_msg.name = ['pan_link', 'laser_link']
+    joint_state_msg.position = [math.degrees(pan), math.degrees(tilt - np.pi/2)]
+    joint_state_msg.velocity = []
+    joint_state_msg.effort = []
+    self.joint_state_pub.publish(joint_state_msg)
 \end{lstlisting}
-\subsection*{\texttt{dumb\_regressor} Script}
-%\lstinputlisting[caption={\texttt{dumb\_regressor} Script},label={lst:dumbreg},language=Python]{code/dumbregressor.py}
+
+\section*{mx64\_turret Module}
+\subsection*{set\_joint\_angle Method}
+Callback for the topic mentioned in \ref{publishJointState}, which adjusts the value accounting for the true zero positions of the motors and then calls the \texttt{dynamixel\_workbench} provided service to move the motors.
+\begin{lstlisting}[caption={Set Joint Angle},label={lst:setjointangle},language=Python]
+def set_joint_angle(self, msg):
+    angles = msg.position
+    new_pos = {}
+    new_pos_print = {}
+    vel = {}
+    
+    for idx, i in enumerate(self.joint_ids):
+        new_pos[i] = angles[idx] + self.zeros[i]
+        if i == 2:
+            new_pos[i] = -angles[idx]
+        self.set_joint_angle_srv("rad", i, math.radians(new_pos[i]))
+\end{lstlisting}
+\section*{mx64\_trajectory\_publisher Module}
+\subsection*{run\_floor\_trajectory}
+An extract of the \texttt{run\_floor\_method} that computes the points to draw an $\infty$ shape trajectory and publish each point at a fixed rate to topic subscribed by the \texttt{tf\_broadcaster} module already explained in \ref{sec:tfbroadcaster}
+\begin{lstlisting}[caption={Run $\infty$ Trajectory},label={lst:runfloortrajectory},language=Python]
+def run_floor_trajectory(self, shape):
+    if shape.data == '8':
+        t=-90
+        while t<1000:
+            if not rospy.is_shutdown() and self.drawing:
+                rad = math.radians(t)
+                scale = 2 / (3 - math.cos(2*rad));
+                y = 100*scale * math.cos(rad);
+                x = self.inf_center+(100*scale * math.sin(2*rad) / 2);
+                #rospy.loginfo("(x, y): (%.5f, %.5f) " % (x, y))
+                msg_point = PointStamped()
+                msg_point.header = Header()
+                msg_point.header.stamp = rospy.Time.now()
+                msg_point.point.x = x/100.0
+                msg_point.point.y = -y/100.0
+                msg_point.point.z = 0.0
+                self.target_pub.publish(msg_point)
+                t+=self.step
+                self.rate.sleep()
+            else:
+                break
+    elif ...
+\end{lstlisting}
+\section*{Kobuki Demos Related Code}
+\subsection*{GoalQueue Class}
+We implemented that convenient class to keep a fixed size queue, thus a First In First Out (FIFO) structure. Here we put the last point pointed by the human on the ground. The class provides a simple method, \texttt{goal\_detected}, which detects when the user has been pointing at the same point, with a tolerance given by a threshold, for three seconds. It considers the furthest point in the queue from the first point that has entered it (the oldest), computing it with the \texttt{distance\_from\_oldest} method. If that point is within the distance threshold then the \texttt{goal\_detected} returns \texttt{True}.
+\begin{lstlisting}[caption={Goal Queue Class},label={lst:goalqueue},language=Python]
+class GoalQueue:
+    def __init__(self, size, threshold):
+        self.tail = -1
+        self.MAX_SIZE = size-1
+        self.x_queue = np.zeros(size)
+        self.y_queue = np.zeros(size)
+        self.threshold = threshold
+    def enqueue(self, x, y):
+        if self.tail == self.MAX_SIZE:
+            self.x_queue = shift(self.x_queue, -1, cval = x)
+            self.y_queue = shift(self.y_queue, -1, cval = y)
+        elif self.tail < self.MAX_SIZE:
+            self.tail += 1
+            self.x_queue[self.tail] = x
+            self.y_queue[self.tail] = y
+    def distance_from_oldest(self):
+        px, py = self.x_queue[0], self.y_queue[0]
+        return np.sqrt((px - self.x_queue[1:])**2 + ((py - self.y_queue[1:]))**2)
+
+    def goal_detected(self):
+        max_distance = np.max(self.distance_from_oldest())
+        if max_distance <= self.threshold and self.tail == self.MAX_SIZE:
+            return True
+        else:
+            return False
+    def clear(self):
+        self.tail = -1
+        self.x_queue = np.zeros(self.MAX_SIZE+1)
+        self.y_queue = np.zeros(self.MAX_SIZE+1)
+\end{lstlisting}
+
+\subsection*{update\_to\_go\_point Method}
+If the kobuki is in the state in which is waiting for the goal point, that method checks, through the help of the \texttt{GoalQueue} class, if a goal point has been provided. In that case it sets the goal point and clears the queue.
+\begin{lstlisting}[caption={Update To Go Point},label={lst:updatetogopoint},language=Python]
+def update_to_go_point(self, msg):
+    if self.state == 'wait_goal_point':
+        self.goal_queue.enqueue(msg.pose.position.x, msg.pose.position.y)
+        if self.goal_queue.goal_detected():
+            stamped_point = PointStamped()
+            stamped_point.header = msg.header
+            stamped_point.header.stamp = rospy.Time() #= msg.header
+            stamped_point.point = msg.pose.position
+            self.go_to_point = stamped_point#self.tf.transformPoint("base_link", stamped_point)
+            self.state = 'goal_point_acquired'
+            self.goal_queue.clear()
+\end{lstlisting}
+The \texttt{kobuki\_follow\_trajectory} counterpart is the same for the start point acquisition. Then, it loops each following point and, after checking whether an end point is detected, it publishes it to be used later to follow the trajectory. If an end point is detected, it moves the system to the following state.
+\begin{lstlisting}[caption={Update To Go Point},label={lst:updatetogopoint2},language=Python]
+def update_to_go_point(self, msg):
+    if self.state == 'wait_start_point':
+        self.goal_queue.enqueue(msg.pose.position.x, msg.pose.position.y)
+        if self.goal_queue.goal_detected():
+            stamped_point = PointStamped()
+            stamped_point.header = msg.header
+            stamped_point.header.stamp = rospy.Time()
+            stamped_point.point = msg.pose.position
+            self.kobuki_trajectory_pub.publish(stamped_point)
+            self.state = 'start_point_acquired'
+            self.goal_queue.clear()
+    if self.state == 'acquiring_trajectory':
+        self.goal_queue.enqueue(msg.pose.position.x, msg.pose.position.y)
+        stamped_point = PointStamped()
+        stamped_point.header = msg.header
+        stamped_point.header.stamp = rospy.Time()
+        stamped_point.point = msg.pose.position
+        self.kobuki_trajectory_pub.publish(self.tf.transformPoint("base_link", stamped_point))
+        if self.goal_queue.goal_detected():
+            self.state = 'trajectory_acquired'
+            self.goal_queue.clear()
+\end{lstlisting}
+\subsection*{button\_cb Method}
+Callback method to check if the button on the Metawear IMU device has been pressed. Since pressing the button once will produce more than one \texttt{True} message, we make ourselves sure to consider only the first.
+\begin{lstlisting}[caption={Button Callback},label={lst:buttoncb},language=Python]
+def button_cb(self, msg):
+    if msg.data == True and self.last_button == False:
+        self.button_down = msg.data
+    self.last_button = msg.data
+\end{lstlisting}
+
+\subsection*{run Method}
+Method that runs the interaction for the kobuki go to goal demo. Each step is triggered with the wrist IMU button and confirmed with an audio feedback. When the goal point is set, it set the state of the \texttt{tf\_broadcaster} node to make the laser mark the goal point.
+\begin{lstlisting}[caption={Run Kobuki Go To Goal},label={lst:runkgtg},language=Python]
+def run(self):
+    while not rospy.is_shutdown():
+        try:
+            print("Press the button to go\n")
+            while not self.button_down:
+                pass
+            if self.button_down:
+                self.button_down = False
+                self.kobuki_reset_odom.publish()
+                goal = MotionRellocGoal()
+                goal.max_duration = rospy.rostime.Duration(5) 
+                goal.min_samples = 250
+                self.relloc_client.send_goal_and_wait(goal)
+                self.sound_client.playWave('/home/gabry/catkin_ws/src/hmri_pt_laser/nodes/sounds/beep.wav')
+                self.state = 'wait_goal_point'
+            while not self.state == 'goal_point_acquired':
+                pass
+            if self.state == 'goal_point_acquired':                     self.sound_client.playWave('/home/gabry/catkin_ws/src/    hmri_pt_laser/nodes/sounds/beep.wav')
+                self.state = 'moving'
+                self.kobuki_goal_pub.publish(self.go_to_point)
+                self.state_pub.publish("marking_kobuki_goal")
+        except rospy.ROSException, e:
+            if e.message == 'ROS time moved backwards':
+                rospy.logwarn("Saw a negative time change. Resetting internal state...")
+                self.reset_state()
+    print("End")
+\end{lstlisting}
+The \texttt{kobuki\_follow\_trajectory} looks exactly alike, a part the fact that must pass through a couple of different states before moving.
+\begin{lstlisting}[caption={Run Kobuki Follow Trajectory},label={lst:kft},language=Python]
+def run(self):
+    while not rospy.is_shutdown():
+        try:
+            print("Press the button to go\n")
+            while not self.button_down:
+                pass
+            if self.button_down:
+                self.button_down = False
+                self.kobuki_reset_odom.publish()
+                goal = MotionRellocGoal()
+                goal.max_duration = rospy.rostime.Duration(5)
+                goal.min_samples = 250
+                self.relloc_client.send_goal_and_wait(goal)
+                self.sound_client.playWave('/home/gabry/catkin_ws/src/hmri_pt_laser/nodes/sounds/beep.wav')
+                self.state = 'wait_start_point'
+            while not self.state == 'start_point_acquired':
+                pass
+            if self.state == 'start_point_acquired':
+                self.sound_client.playWave('/home/gabry/catkin_ws/src/hmri_pt_laser/nodes/sounds/beep.wav')
+                self.state = 'acquiring_trajectory'
+            while not self.state == 'trajectory_acquired':
+                pass
+            if self.state == 'trajectory_acquired':
+                self.sound_client.playWave('/home/gabry/catkin_ws/src/hmri_pt_laser/nodes/sounds/beep.wav')
+                self.kobuki_trajectory_start.publish()
+                self.state_pub.publish("following_kobuki_trajectory")
+                
+        except rospy.ROSException, e:
+            if e.message == 'ROS time moved backwards':
+                rospy.logwarn("Saw a negative time change. Resetting internal state...")
+                self.reset_state()
+    print("End")
+\end{lstlisting}
+\subsection*{Kobuki Controller}
+Here we have all the methods to move the kobuki to a goal point or follow a list of goal point with the same PID controller. Here we break it into pieces to explain it.
+\begin{lstlisting}[caption={Kobuki PID Controller},label={lst:kobukicontroller},language=Python]
+distance_tolerance = 0.2 #distance tolerance from goal point when moving
+max_linear_speed= 0.14   #max thymio linear speed
+max_angular_speed = 1    #max Thymio angular speed
+
+#Parameter for linear velocity PID Controller
+vel_P = 1
+vel_I = 0
+vel_D = 0
+
+#Parameter for angular velocity PID Controller
+ang_P = 2
+ang_I = 0
+ang_D = 0
+
+"""
+Useful class to implement a PID controller
+"""
+class PID:
+    
+    def __init__(self, Kp, Ki, Kd):
+        self.Kp = Kp
+        self.Ki = Ki
+        self.Kd = Kd
+        self.last_e = None
+        self.sum_e = 0
+        
+    def step(self, e, dt):
+        """ dt should be the time interval from the last method call """
+        if(self.last_e is not None):
+            derivative = (e - self.last_e) / dt
+        else:
+            derivative = 0
+        self.last_e = e
+        self.sum_e += e * dt
+        return self.Kp * e + self.Kd * derivative + self.Ki * self.sum_e
+
+"""
+Useful method to implement angle difference
+"""
+def angle_difference(angle1, angle2):
+    return np.arctan2(np.sin(angle1-angle2), np.cos(angle1-angle2))
+    assert(np.isclose(angle_difference(0.5*np.pi, 0),  0.5*np.pi))
+    assert(np.isclose(angle_difference(1.5*np.pi, 0), -0.5*np.pi))
+    assert(np.isclose(angle_difference(np.pi*-2/3, np.pi*2/3), np.pi*2/3))
+    assert(np.isclose(angle_difference(0, 2*np.pi), 0))
+\end{lstlisting}
+Here follows the kobuki class. Explanation are inserted as comments.
+\begin{lstlisting}[caption={Kobuki Class},label={lst:kobukiclass},language=Python]
+class Kobuki:
+    def __init__(self):
+        """init"""
+        rospy.init_node('kobuki_controller', anonymous=True)
+
+        self.velocity_publisher = rospy.Publisher('/mobile_base/commands/velocity',
+                                                  Twist, queue_size=10)
+
+        # A subscriber to the topic '/odom'. self.update_state is called
+        # when a message of type Pose is received.
+        self.pose_subscriber = rospy.Subscriber('/odom',
+                                                Odometry, self.update_state)
+        #subscriber to receive goal point
+        self.goal_point_pub= rospy.Subscriber('/mobile_base/commands/goal_point', PointStamped, self.goal_point_cb)
+        self.kobuki_goal_pub = rospy.Publisher('kobuki_goal_point', PointStamped, queue_size=10)
+        self.state_pub = rospy.Publisher("state", String, queue_size = 1)
+        
+        #subscriber to start follow the trajectory
+        self.kobuki_trajectory_start = rospy.Subscriber("/mobile_base/commands/trajectory_start", Empty, self.follow_trajectory)
+        
+        #subscriber to receive trajectory point
+        self.kobuki_trajectory_sub = rospy.Subscriber("/mobile_base/commands/trajectory_point", PointStamped, self.trajectory_point_cb)
+        self.trajectory = []
+
+
+        self.current_pose = Pose()
+
+        #we always keep the yaw as it's useful
+        self.yaw = 0
+        self.current_twist = Twist()
+        # publish at this rate
+        self.hz =10.0
+        self.rate = rospy.Rate(self.hz)
+
+        #All the needed PID
+        self.vel_controller= PID(vel_P, vel_I, vel_D)
+        self.angle_controller = PID(ang_P, ang_I, ang_D)
+        self.dt = 1.0/self.hz
+
+        self.tf = tf.TransformListener()
+        self.br = tf.TransformBroadcaster()
+
+    #store the received trajectory point
+    def trajectory_point_cb(self, msg):
+        self.trajectory.append(msg)
+    #follow the trajectory by picking each point only if it is at least at 20cm from the previous one
+    def follow_trajectory(self, msg):
+        prev_point = self.trajectory[0]
+        stamped_point = self.tf.transformPoint("base_link", self.trajectory[0])
+        self.move2goal((stamped_point.point.x, stamped_point.point.y))
+        for point in self.trajectory[1:]:
+            stamped_point = self.tf.transformPoint("base_link", point)
+            if self.get_distance_bw_points(prev_point.point, point.point)>= 0.20:
+                self.move2goal((stamped_point.point.x, stamped_point.point.y))
+                prev_point = point
+        self.state_pub.publish('following_target')
+        self.trajectory = []
+
+    #go to (single) goal point and tells tf_broadcaster to point the laser at it
+    def goal_point_cb(self, msg):
+        stamped_point = self.tf.transformPoint("base_link", msg)
+        self.move2goal((stamped_point.point.x, stamped_point.point.y))
+        self.state_pub.publish('following_target')
+
+    def update_state(self, data):
+        """A new Odometry message has arrived. See Odometry msg definition."""
+
+        self.current_pose = data.pose.pose
+        self.current_twist = data.twist.twist
+        quat = (
+            self.current_pose.orientation.x,
+            self.current_pose.orientation.y,
+            self.current_pose.orientation.z,
+            self.current_pose.orientation.w)
+        (roll, pitch, yaw) = euler_from_quaternion (quat)
+        self.yaw = yaw
+    
+    #return the distance between the current position of the kobuki (obtained with odometry) and a goal point
+    def get_distance(self, goal_x, goal_y):
+        distance = sqrt(pow((goal_x - self.current_pose.position.x), 2) + pow((goal_y - self.current_pose.position.y), 2))
+        return distance
+    def get_distance_bw_points(self, point, other_point):
+        distance = sqrt(pow((point.x - other_point.x), 2) + pow((point.y - other_point.y), 2))
+        return distance
+
+    #Use 2 PID controller to move the kobuki to a goal point (one for linear and one for angular velocity)    
+    def move2goal(self, moves):
+        goal_pose = Pose()
+        rospy.loginfo(moves) 
+        
+        goal_pose.position.x = moves[0]
+        goal_pose.position.y = moves[1]
+
+        vel_msg = Twist()
+
+        while self.get_distance(goal_pose.position.x, goal_pose.position.y) >= distance_tolerance:
+
+            #Porportional Controller
+            #linear velocity in the x-axis:
+            dist_error = self.get_distance(goal_pose.position.x, goal_pose.position.y) 
+            vel_msg.linear.x = np.clip(self.vel_controller.step(dist_error, self.dt), 0.0, max_linear_speed)
+            vel_msg.linear.y = 0
+            vel_msg.linear.z = 0
+
+            #angular velocity in the z-axis:
+            vel_msg.angular.x = 0
+            vel_msg.angular.y = 0
+            vel_msg.angular.z = np.clip(self.angle_controller.step(angle_difference(atan2(goal_pose.position.y - self.current_pose.position.y, goal_pose.position.x - self.current_pose.position.x), self.yaw), self.dt), -max_angular_speed, max_angular_speed)
+
+            #Publishing our vel_msg
+            self.velocity_publisher.publish(vel_msg)
+            self.rate.sleep()
+        #Stopping our robot after the movement is over
+        vel_msg.linear.x = 0
+        vel_msg.angular.z =0
+        self.velocity_publisher.publish(vel_msg)
+
+if __name__ == '__main__':
+    
+    kobuki = Kobuki()
+
+    try:
+        while not rospy.is_shutdown():
+            rospy.spin()
+    except rospy.ROSInterruptException:
+        system.exit(1)
+\end{lstlisting}

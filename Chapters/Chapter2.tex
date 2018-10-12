@@ -40,7 +40,7 @@ Those are the values that set the limitations for that turret, causing the issue
 	\label{fig:ax12+}
 \end{figure}
 \subsection{Issues}\label{subs:firstModel:issues}
-Here we will only report the issues raised by the motors. Solutions are discussed in the next chapter.
+Here we will only report the issues raised by the motors. The final solution is explained in next chapter. All other attempts are mentioned in the appendix.
 \subsubsection{Servo Resolution and Slow Speed Limit}
 Even though a resolution of $0.29^{\circ}$ could seem pretty good, that value heavily limits the performance of the turret. As a matter of fact, in our system, the joint will be often asked to do very small movement and, thus, drawing tiny angles. Moreover, the motor is not able to move with too much low speed values. That issue becomes even bigger when the laser dot moves far from the turret: the angles become always more smaller. The result is that the performances of the turret can be good enough only on a small size space around the turret, but that is not certainly enough for our system.
 \subsubsection{Trajectory Smoothness}
@@ -75,10 +75,10 @@ We use a simple 5V red laser diode powered directly from an \emph{Arduino Uno Bo
 \end{minipage}
 \end{figure}
 \subsection{Structural Parts}
-Figures \ref{fig:axFrames} shows the plastic frames used to assemble the turret. Mounting instructions can be found in the appendix. \todo{MOVE MOUNTING INSTRUCTIONS TO APPENDIX?}
+Figures \ref{fig:axFrames} shows the plastic frames used to assemble the turret. Mounting instructions can be found in the appendix.
 \begin{figure}
 	\centering
-	\includegraphics[width=\textwidth]{img/axFrames.png}%
+	\includegraphics[width=\textwidth]{img/axFrames-min.png}%
 	\caption{Plastic Mounting Frames}
 	\label{fig:axFrames}
 \end{figure}
@@ -126,7 +126,7 @@ The structural parts are provided together with the ScorpionX MX-64 Robot Turret
 \begin{figure}
 	\centering
 	\includegraphics[width=.7\textwidth]{img/mx64Pieces.png}%
-	\caption{\emph{Top-Left}: FR05-S101 Side Frame. \emph{Bottom-Left}: FR05-H101 Hinge Frame. \emph{Right}: ScorpionX MX-64 Robot Turret Kit.}
+	\caption[MX-64 Mounting Frames]{\emph{Top-Left}: FR05-S101 Side Frame. \emph{Bottom-Left}: FR05-H101 Hinge Frame. \emph{Right}: ScorpionX MX-64 Robot Turret Kit.}
 	\label{fig:mx64Pieces}
 \end{figure}
 \section{Arm IMU}
@@ -134,7 +134,7 @@ As explained in \ref{sec:1.2}, we need an arm IMU device to reconstruct the dire
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{img/IMUS.png}%
-	\caption{\textbf{IMU Devices:} \emph{Left}: Myo Armband. \emph{Right:} MetaMotionR Wrist Band.}
+	\caption[IMU Devices]{\textbf{IMU Devices:} \emph{Left}: Myo Armband. \emph{Right:} MetaMotionR Wrist Band.}
 	\label{fig:IMUS}
 \end{figure}
 \section{Kobuki}
