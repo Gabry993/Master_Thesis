@@ -171,11 +171,9 @@ In both cases, all we have to do is compute transformation between human and tur
 	\label{fig:rellocDemo}
 \end{figure}
 \subsection{Kobuki Go to Goal Demo}\label{subs:kobukiGoToGoal}
-That demo exploits the kobuki platform to show an interesting use case for the system: mobile robot navigation.\\
-In that case, we do the relloc and then tell the kobuki to reach a certain position by pointing at it for three seconds.\\
+That demo exploits the kobuki platform to show an interesting use case for the system: mobile robot navigation. In that case, we do the relloc and then tell the kobuki to reach a certain position by pointing at it for three seconds.\\
 In addition to the relloc system, we implemented a basic PID controller to move the kobuki. The library to interface with the robot is available online \cite{kobuki:ROS}. That simple controller, contained in the \textbf{kobuki\_go\_to\_goal} module, is very important as, while it computes the velocity command to move the kobuki, it also computes the new goal for the turret, in order to keep pointing the destination while the robot is moving, leveraging on its own odometry. Figure \ref{fig:goToGoalDemo} tries to explain that.\\ 
-To detect the fact that the user is pointing the same point for three seconds, we implemented a nice function with a fixed size queue where we store the coordinates of the last 150 laser points (which means points in the last $3$ seconds at $50Hz$). We check if the average distance of each point from the first point in the queue is within a given threshold: in that case we detect the 3 seconds pointing.\\
-All that additional code is contained in the \textbf{kobuki\_go\_to\_goal} module, which interfaces flawlessly with our system.
+To detect the fact that the user is pointing the same point for three seconds, we implemented a nice function with a fixed size queue where we store the coordinates of the last 150 laser points (which means points in the last $3$ seconds at $50Hz$). We check if the average distance of each point from the first point in the queue is within a given threshold: in that case we detect the 3 seconds pointing. All that additional code is contained in the \textbf{kobuki\_go\_to\_goal} module, which interfaces flawlessly with our system.
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{img/kgtgSW.png}%
@@ -185,11 +183,10 @@ All that additional code is contained in the \textbf{kobuki\_go\_to\_goal} modul
 \subsection{Kobuki Follow Trajectory Demo}
 In that case we have the same ingredients of the \emph{Go to Goal Demo}, but the last part is different. Now the kobuki will not simply go to a goal point, but rather it will follow a trajectory drawn by the user.\\
 To mark the begin of the trajectory, the user points the start point for three seconds. After an audio feedback, he draws the trajectory with pointing gestures and finally marks the end of it again with another three seconds pointing.\\
-The three second pointing detection code is the same explained in \ref{subs:kobukiGoToGoal}. Moreover, we added code to sample the trajectory point list based on distance: that means that the actual trajectory followed by the kobuki is composed of points which are at a threshold distance from their predecessor. Of course, if that threshold is zero, we are using all the sampled points.\\
-
+The three second pointing detection code is the same explained in \ref{subs:kobukiGoToGoal}. Moreover, we added code to sample the trajectory point list based on distance: that means that the actual trajectory followed by the kobuki is composed of points which are at a threshold distance from their predecessor. Of course, if that threshold is zero, we are using all the sampled points.
 \begin{figure}
 	\centering
-	\includegraphics[width=\textwidth]{img/followTrajectoryDemo.png}%
+	\includegraphics[width=\textwidth]{img/followTrajectorySW.png}%
 	\caption{Kobuki Follow Trajecotry Demo}
 	\label{fig:followTrajectoryDemo}
 \end{figure}
