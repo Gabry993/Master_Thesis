@@ -91,19 +91,19 @@ A video containing both of them is available online \footnote{\url{https://youtu
 
 \subsection{Kobuki Go to Goal Application}
 The original relloc system was applied to control a flying robot \cite{gromov2018robot}. In that context, the feedback user had while controlling the drone with pointing consisted of the drone itself. However, that approach is not suitable for a slow moving ground robot, as the kobuki. Here the turret system developed for this thesis comes in play: mounting it on top of the kobuki, we can face the mobile robot navigation task in a convenient way.\\
-Figure \ref{fig:kgtgSetup} shows the setup of the demo: we have the user wearing the IMU device and the kobuki equipped with our turret. The steps composing the demo are the following:
+Top-right figure of \ref{fig:kgtgDemo1} shows the setup of the demo: we have the user wearing the IMU device and the kobuki equipped with our turret. The steps composing the demo are the following (consider figure \ref{fig:kgtgDemo1}):
 \begin{itemize}
-    \item the user does the relloc (figure \ref{fig:kgtgRelloc});
+    \item the user does the relloc (bottom-left figure);
     \item an audio feedback alerts the user that the relloc is done and he can now move the laser with pointing;
-    \item the user points the place he wants the kobuki to reach for three second (figure \ref{fig:kgtgPointing});
-    \item the kobuki moves to that point, while the laser keeps pointing at it. (figure \ref{fig:kgtgGoal})
+    \item the user points the place he wants the kobuki to reach for three second (top-right figure);
+    \item the kobuki moves to that point, while the laser keeps pointing at it. (bottom-right figure)
 \end{itemize}
-Figure \ref{fig:kgtgGoal} gives also a qualitative feedback: the user is able to drive the kobuki through the cones easily and precisely.
+That last figure gives also a qualitative feedback: the user is able to drive the kobuki through the cones easily and precisely.
 \subsection{Kobuki Follow Trajectory Application}
 Here we add another step to the previous go to goal application: now, by pointing for three seconds, users mark the begin of a trajectory. Then, they can draw an entire trajectory (figure \ref{fig:kftTrajectory} and finally, pointing again the same point for three seconds, set the end point. After that, the kobuki will follow the trajectory. Note how bad that trajectory can look again in figure \ref{fig:kftTrajectory}. In that case, the user was drawing very slowly and with scarce accuracy. Anyway, by sampling that trajectory discarding points too close to each others, the kobuki was able to move around the two cones flawlessly (figure \ref{fig:kftFollowing}).\\
 Just to sum up, here all all the step composing the application:
 \begin{itemize}
-    \item the user does the relloc (as in figure \ref{fig:kgtgRelloc});
+    \item the user does the relloc (as in figure \ref{fig:kgtgDemo1});
     \item an audio feedback alerts the user that the relloc is done and he can now move the laser with pointing;
     \item the user points for three seconds the place he wants the kobuki to start the trajectory;
     \item after an audio feedback, the user can draw the trajectory. (figure \ref{fig:kftTrajectory});
@@ -112,27 +112,9 @@ Just to sum up, here all all the step composing the application:
 \end{itemize}
 \begin{figure}
 	\centering
-	\includegraphics[width=\textwidth]{img/kgtgSetup.png}%
-	\caption{Kobuki Go to Goal: Setup}
-	\label{fig:kgtgSetup}
-\end{figure}
-\begin{figure}
-	\centering
-	\includegraphics[width=\textwidth]{img/kgtgRelloc2.png}%
-	\caption[Kobuki Go to Goal: User doing the Relloc]{Kobuki Go to Goal: User doing the Relloc. The laser shape trajectory is made visible.}
-	\label{fig:kgtgRelloc}
-\end{figure}
-\begin{figure}
-	\centering
-	\includegraphics[width=\textwidth]{img/kgtgPointing.png}%
-	\caption{Kobuki Go to Goal: Pointing Goal Point}
-	\label{fig:kgtgPointing}
-\end{figure}
-\begin{figure}
-	\centering
-	\includegraphics[width=.7\textwidth]{img/kgtgGoal.png}%
-	\caption{Kobuki Go to Goal: Goal Point Reached}
-	\label{fig:kgtgGoal}
+	\includegraphics[width=\textwidth]{img/kgtgDemo1.png}%
+	\caption[Kobuki Go to Goal]{Kobuki Go to Goal. \emph{top-left}: Setup; \emph{bottom-left}: User Performing the Relloc; \emph{top-right}: User Pointing Goal Point for 3 Seconds; \emph{bottom-right}: Kobuki Reaching the Goal Point.}
+	\label{fig:kgtgDemo1}
 \end{figure}
 \begin{figure}
 	\centering

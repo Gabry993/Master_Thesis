@@ -13,7 +13,7 @@ Our final goal is to be able to define the direction of a laser ray mounted on t
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{img/panTilt.png}%
-	\caption{Pan Angle (on the left) and Tilt Angle (on the right) Explained}
+	\caption[Pan and Tilt Angles Explained]{\emph{left}: Pan Angle Explained; \emph{right}: Tilt Angle Explained}
 	\label{fig:panTilt}
 \end{figure}
 For those purposes, we have built two different turrets. Since the model of the first one is slightly simpler than the second, we will start describing the former, which turns out to be helpful to understand the latter. We will focus on the case in which the laser must be projected on the ground.
@@ -121,9 +121,9 @@ Finally,
 	\caption{Human Pointing Model}
 	\label{fig:pointingModel}
 \end{figure}
-The approach we follow to model human pointing is the one used in \cite{gromov2018robot}. \\
+The approach we follow to model human pointing is the one used in \cite{gromov2018robot}.\\
 The \emph{head-finger} model defines human pointing rays as originating at a centroid of the head and passing through the index fingertip. Figure \ref{fig:pointingModel} shows both the model and an explanation photo.\\
-The reference frame \textbf{human\_footprint} is located at the human feet with the \emph{x}-axis pointing forward, \emph{y}-axis to the left, and \emph{z}-axis pointing up. The pointing ray is a 3D half-line on which the point that the human intends to indicate lies. So, our goal is to intersect that line with the floor (i.e. the \emph{xy}-plane of \textbf{human\_footprint} frame) in order to get the point indicated by the user. To do so, we get pointing rays using orientation readings from a wearable IMU. Once we have that, we can compute the intersection of those rays with the ground as a simple \emph{line-plane} intersection, as explained in \cite{O'Rourke:1998:CGC:289380}.\\
+The reference frame \textbf{human\_footprint} is located at the human feet with the \emph{x}-axis pointing forward, \emph{y}-axis to the left, and \emph{z}-axis pointing up. The pointing ray is a 3D half-line on which the point that the human intends to indicate lies. So, our goal is to intersect that line with the floor (i.e. the \emph{xy}-plane of \textbf{human\_footprint} frame) in order to get the point indicated by the user. To do so, we get pointing rays using orientation readings from a wearable IMU. Once we have that, we can compute the intersection of those rays with the ground as a simple \emph{line-plane} intersection, as explained in \cite{O'Rourke:1998:CGC:289380}.
 
 Consider a line \textbf{L} given by its parametric equation:
 \begin{align}
