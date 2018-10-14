@@ -8,20 +8,20 @@ In this chapter describe the two main experiments we built to collect data and a
 	\caption{Pointing Experiment Setup (Black Crosses Are Ground Targets)}
 	\label{fig:pointingExpSetup}
 \end{figure}
-We place the turret and three ground targets in known positions. The user is placed in front of the second target, oriented perpendicularly to the line connecting the targets. Figure \ref{fig:pointingExpSetup} shows that setup. The relative localization between the human and the turret is known a priori, so we are not performing any relloc. The user is wearing the IMU and we are collecting his pointing data.\\
+We place the turret and three ground targets in known positions. The user is placed in front of the second target, oriented perpendicularly to the line connecting the targets. Figure \ref{fig:pointingExpSetup} shows that setup. The relative localization between the human and the turret is known a priori, so we are not performing any \ac{relloc}. The user is wearing the \ac{IMU} and we are collecting his pointing data.\\
 The user has to point each target first without any additional visual feedback, so he has to rely solely on his perception. Second, he has to point again with the visual feedback provided by the laser dot. Those are the steps composing each iteration of the experiment (one for each target):
 \begin{itemize}
     \item after a countdown, the user points the target without feedback;
     \item the user keeps pointing for 5 seconds;
     \item after a sound feedback, the user can rest his arm;
-    \item after a countdown, the user points the target with the laser; feedback;
+    \item after a countdown, the user points the target with the laser feedback;
     \item the user keeps pointing for 5 seconds;
     \item after a sound feedback, the user can rest his arm.
 \end{itemize}
 Each user has to perform that loop three time for each target, for a total of nine iterations.
 \subsection{Goals}
 The performance of the interface crucially relies on operator’s perception. Due to simplifications in the pointing model that we use and various sensory errors, the estimated frame transformations and the pointing are expected to be imprecise.\\
-With that experiment we want to understand if availability of visual feedback is useful and thus improves the pointing accuracy. This is why we ask users to drive the laser dot to the target, where the laser dot represents the location where the system thinks the user is pointing. Comparing results with and without feedback, we can understand if providing that feedback helps users to timely adapt to any misalignments.
+With that experiment we want to understand if availability of visual feedback is useful and thus improves the pointing accuracy. This is why we ask users to drive the laser dot to the target, where the laser dot represents the location where the system thinks the user is pointing. Comparing results with and without feedback, we can understand if providing that feedback helps users to timely adapt to any misalignment.
 
 \subsection{Results}
 First, we can look at the users' trajectories with and without feedback in figure \ref{fig:userTrajectories}. We can immediately see that without feedback users go straight to their goal point, but that point, for the system, does not correspond to the target. With feedback, on the contrary, users are able to tell the system to point at the target. This intuition can be see in figure \ref{fig:distanceComparison} and is further confirmed by figure \ref{fig:avgDistance}: without feedback, users quickly reach an average distance from the target of 0.5 m but do not improve any further. When the feedback is provided, distance decreases to almost 0 within 5 seconds. This is expected as the system has intrinsic inaccuracies (for example in the reconstruction of pointing rays) which the user is unable to see and correct. 
@@ -48,16 +48,16 @@ This demonstrates that real-time feedback is a key component for our system. Thi
 \end{figure}
 
 \section{Relloc Experiment}
-For that experiment we will describe the setup and the goal, but will provide only results obtained with the first turret model, which heavily influenced the results with its limited performance. We have also experimented a bit with the second turret obtaining better qualitative result, but we did not have time to perform an entire data collection with users, which we plan to do in the future.
+For that experiment we will describe the setup and the goal, but will provide only results obtained with the first turret model, which heavily influenced the results with its limited performances. We have also experimented a bit with the second turret obtaining better qualitative result, but we did not have time to perform an entire data collection with users, which we plan to do in the future.
 
 \subsection{Setup}
-We perform the relloc 9 times from 9 different known positions on the floor. The order of the positions is randomly shuffled for each user. So, the experiment runs the following loop 9 time for each user:
+We perform the \ac{relloc} 9 times from 9 different known positions on the floor. The order of the positions is randomly shuffled for each user. So, the experiment runs the following loop 9 time for each user:
 \begin{itemize}
     \item the turret points the position where the user must stand and starts a countdown;
-    \item at the end of the countdown, the relloc starts: the turret draws the $\infty$ trajectory and the user follow it with pointing gestures;
-    \item once the relloc is done, the turret points to the estimated location of the user.
+    \item at the end of the countdown, the \ac{relloc} starts: the turret draws the $\infty$ trajectory and the user follow it with pointing gestures;
+    \item once the \ac{relloc} is done, the turret points to the estimated location of the user.
 \end{itemize}
-In that way we can have an immediate visible the result: the nearer the turret is pointing to the user, the better the relloc is working. We can obtain that measure directly confronting the known initial location with the estimated one.
+In that way we can have an immediate visible the result: the nearer the turret is pointing to the user, the better the \ac{relloc} is working. We can obtain that measure directly confronting the known initial location with the estimated one.
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{img/rellocExpSetup.png}%
@@ -66,7 +66,7 @@ In that way we can have an immediate visible the result: the nearer the turret i
 \end{figure}
 
 \subsection{Goals}
-The main goals of that experiment of course is to obtain a direct estimate of the relloc precision. Moreover, it is useful to see if also inexperienced users can interface with the system easily.
+The main goals of that experiment of course is to obtain a direct estimate of the \ac{relloc} precision. Moreover, it is useful to see if also inexperienced users can interface with the system easily.
 
 \subsection{Results}
 As already said, we collected data only with the first turret model. We will also run the experiment with the second turret, but from the trials we already did, we have qualitative evidence that the second should obtain better results than the first. \\
@@ -76,10 +76,10 @@ However, we report the average error obtained with the data collected with the f
     \text{mean\_x\_error} =&\ 36.71\text{ cm}\nonumber\\
     \text{mean\_y\_error} =&\ 24.60\text{ cm}\nonumber
 \end{align}
-where \textbf{mean\_distance\_error} is the mean of the distances between the position where the user is supposed to be when starting the relloc and the position estimated by our system. \textbf{mean\_x/y\_error} are the means of the differences between each coordinates.
+where \textbf{mean\_distance\_error} is the mean of the distances between the position where the user is supposed to be when starting the \ac{relloc} and the position estimated by our system. \textbf{mean\_x/y\_error} are the means of the differences between each coordinates.
 
 \section{Applications}
-As already mentioned, we explored a couple of applications for our system. One consists exactly in what was done for the experiments already presented. In fact, that system is useful to collect data and study pointing models. It also serves as a tool to asses the performances and the precision of the relloc procedure.\\
+As already mentioned, we explored a couple of applications for our system. One consists exactly in what was done for the experiments already presented. In fact, that system is useful to collect data and study pointing models. It also serves as a tool to asses the performances and the precision of the \ac{relloc} procedure.\\
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{img/rellocDemo.png}%
@@ -90,21 +90,21 @@ However, in that section will we present two entire human-robot interaction scen
 A video containing both of them is available online \footnote{\url{https://youtu.be/hyh_5A4RXZY?t=85}}.
 
 \subsection{Kobuki Go to Goal Application}
-The original relloc system was applied to control a flying robot \cite{gromov2018robot}. In that context, the feedback user had while controlling the drone with pointing consisted of the drone itself. However, that approach is not suitable for a slow moving ground robot, as the kobuki. Here the turret system developed for this thesis comes in play: mounting it on top of the kobuki, we can face the mobile robot navigation task in a convenient way.\\
-Top-right figure of \ref{fig:kgtgDemo1} shows the setup of the demo: we have the user wearing the IMU device and the kobuki equipped with our turret. The steps composing the demo are the following (consider figure \ref{fig:kgtgDemo1}):
+The original \ac{relloc} system was applied to control a flying robot \cite{gromov2018robot}. In that context, the feedback user had while controlling the drone with pointing consisted of the drone itself. However, that approach is not suitable for a slow moving ground robot, as the kobuki. Here the turret system developed for this thesis comes in play: mounting it on top of the kobuki, we can face the mobile robot navigation task in a convenient way.\\
+Top-right figure of \ref{fig:kgtgDemo1} shows the setup of the demo: we have the user wearing the \ac{IMU} device and the kobuki equipped with our turret. The steps composing the demo are the following (consider figure \ref{fig:kgtgDemo1}):
 \begin{itemize}
-    \item the user does the relloc (bottom-left figure);
-    \item an audio feedback alerts the user that the relloc is done and he can now move the laser with pointing;
+    \item the user does the \ac{relloc} (bottom-left figure);
+    \item an audio feedback alerts the user that the \ac{relloc} is done and he can now move the laser with pointing;
     \item the user points the place he wants the kobuki to reach for three second (top-right figure);
     \item the kobuki moves to that point, while the laser keeps pointing at it. (bottom-right figure)
 \end{itemize}
 That last figure gives also a qualitative feedback: the user is able to drive the kobuki through the cones easily and precisely.
 \subsection{Kobuki Follow Trajectory Application}
-Here we add another step to the previous go to goal application: now, by pointing for three seconds, users mark the begin of a trajectory. Then, they can draw an entire trajectory (figure \ref{fig:kftTrajectory} and finally, pointing again the same point for three seconds, set the end point. After that, the kobuki will follow the trajectory. Note how bad that trajectory can look again in figure \ref{fig:kftTrajectory}. In that case, the user was drawing very slowly and with scarce accuracy. Anyway, by sampling that trajectory discarding points too close to each others, the kobuki was able to move around the two cones flawlessly (figure \ref{fig:kftFollowing}).\\
+Here we add another step to the previous go to goal application: now, by pointing for three seconds, users mark the begin of a trajectory. Then, they can draw an entire trajectory (figure \ref{fig:kftTrajectory}) and finally, pointing again the same point for three seconds, set the end point. After that, the kobuki will follow the trajectory. Note how bad that trajectory can look again in figure \ref{fig:kftTrajectory}. In that case, the user was drawing very slowly and with scarce accuracy. Anyway, by sampling that trajectory discarding points too close to each others, the kobuki was able to move around the two cones flawlessly (figure \ref{fig:kftFollowing}).\\
 Just to sum up, here all all the step composing the application:
 \begin{itemize}
-    \item the user does the relloc (as in figure \ref{fig:kgtgDemo1});
-    \item an audio feedback alerts the user that the relloc is done and he can now move the laser with pointing;
+    \item the user does the \ac{relloc} (as in figure \ref{fig:kgtgDemo1});
+    \item an audio feedback alerts the user that the \ac{relloc} is done and he can now move the laser with pointing;
     \item the user points for three seconds the place he wants the kobuki to start the trajectory;
     \item after an audio feedback, the user can draw the trajectory. (figure \ref{fig:kftTrajectory});
     \item the user points for three seconds the place he wants the kobuki to end the trajectory;

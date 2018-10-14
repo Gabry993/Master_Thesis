@@ -1,8 +1,8 @@
 \chapter{Code Listings}
 \label{Appen:B}
 Here we report some important code listings. Note that none of them was included in the document for readability reasons. The entire code is available online \footnote{\url{INSERT REPO HERE}}. Note that here we refer only to the second turret model.
-\section*{tf\_broadcaster Module}\label{sec:tfbroadcaster}
-\subsection*{publish\_tf\_tree Method}
+\section*{tf\_broadcaster module}\label{sec:tfbroadcaster}
+\subsection*{publish\_tf\_tree method}
 This method publishes each frame composing the turret model exploiting the \texttt{tf} library. So, this the internal representation the system has of the turret. In other words, this is what moves our \virgolette{virtual} model.
 \begin{lstlisting}[caption={Publish Turret tf Tree},label={lst:tftree},language=Python]
 def publish_tf_tree(self, pan, tilt):
@@ -24,7 +24,7 @@ def publish_tf_tree(self, pan, tilt):
                      "debug_link", "laser_link")
     self.rate.sleep()
 \end{lstlisting}
-\subsection*{ik Method}
+\subsection*{ik method}
 Given a 3D $(x, y, z)$ point, that method computes the inverse kinematic and return the corresponding pan and tilt values.
 \begin{lstlisting}[caption={Inverse Kinematic},label={lst:ik},language=Python]
 def ik(self, x, y, z):
@@ -37,7 +37,7 @@ def ik(self, x, y, z):
         tilt = -np.pi/2+ tilt1 + tilt2
         return pan, tilt
 \end{lstlisting}
-\subsection*{update\_target\_pose\_point Method}
+\subsection*{update\_target\_pose\_point method}
 This is a ROS topic callback used to update the turret model each time a new target (laser) point is received. Note that, depending on the system state, different transformation could be required to compute the correct point, as we can see in the code. In any case, we end up calling the \texttt{publish\_joint\_state} method (see next section) to send the goal pan and tilt angles to the turret controller interface. We also publish a laser marker in our simulation environment (\texttt{rviz}) for debug purposes (e.g. when things go bad, we can see if they were right at least in the simulator).
 \begin{lstlisting}[caption={Update Target Pose Point},label={lst:updatetargetpose},language=Python]
 def update_target_pose_point(self, msg):
@@ -91,7 +91,7 @@ def update_target_pose_point(self, msg):
         self.publish_joint_state(self.pan_angle, self.tilt_angle)
         self.marker_pub.publish(laser_marker)
 \end{lstlisting}
-\subsection*{publish\_joint\_state Method} \label{publishJointState}
+\subsection*{publish\_joint\_state method} \label{publishJointState}
 Method to publish pan and tilt values through standard ROS \texttt{JointState} messages on a topic. In that way, the node that actually moves the motor can subscribe to that topic and perform the action.
 \begin{lstlisting}[caption={Publish Joint State},label={lst:publishjointstate},language=Python]
 def publish_joint_state(self, pan, tilt):
@@ -105,8 +105,8 @@ def publish_joint_state(self, pan, tilt):
     self.joint_state_pub.publish(joint_state_msg)
 \end{lstlisting}
 
-\section*{mx64\_turret Module}
-\subsection*{set\_joint\_angle Method}
+\section*{mx64\_turret module}
+\subsection*{set\_joint\_angle method}
 Callback for the topic mentioned in \ref{publishJointState}, which adjusts the value accounting for the true zero positions of the motors and then calls the \texttt{dynamixel\_workbench} provided service to move the motors.
 \begin{lstlisting}[caption={Set Joint Angle},label={lst:setjointangle},language=Python]
 def set_joint_angle(self, msg):
@@ -121,7 +121,7 @@ def set_joint_angle(self, msg):
             new_pos[i] = -angles[idx]
         self.set_joint_angle_srv("rad", i, math.radians(new_pos[i]))
 \end{lstlisting}
-\section*{mx64\_trajectory\_publisher Module}
+\section*{mx64\_trajectory\_publisher module}
 \subsection*{run\_floor\_trajectory}
 An extract of the \texttt{run\_floor\_method} that computes the points to draw an $\infty$ shape trajectory and publish each point at a fixed rate to topic subscribed by the \texttt{tf\_broadcaster} module already explained in \ref{sec:tfbroadcaster}
 \begin{lstlisting}[caption={Run $\infty$ Trajectory},label={lst:runfloortrajectory},language=Python]
@@ -150,7 +150,7 @@ def run_floor_trajectory(self, shape):
 \end{lstlisting}
 \section*{Kobuki Demos Related Code}
 \subsection*{GoalQueue Class}
-We implemented that convenient class to keep a fixed size queue, thus a First In First Out (FIFO) structure. Here we put the last point pointed by the human on the ground. The class provides a simple method, \texttt{goal\_detected}, which detects when the user has been pointing at the same point, with a tolerance given by a threshold, for three seconds. It considers the furthest point in the queue from the first point that has entered it (the oldest), computing it with the \texttt{distance\_from\_oldest} method. If that point is within the distance threshold then the \texttt{goal\_detected} returns \texttt{True}.
+We implemented that convenient class to keep a fixed size queue, thus a \ac{FIFO} structure. Here we put the last point pointed by the human on the ground. The class provides a simple method, \texttt{goal\_detected}, which detects when the user has been pointing at the same point, with a tolerance given by a threshold, for three seconds. It considers the furthest point in the queue from the first point that has entered it (the oldest), computing it with the \texttt{distance\_from\_oldest} method. If that point is within the distance threshold then the \texttt{goal\_detected} returns \texttt{True}.
 \begin{lstlisting}[caption={Goal Queue Class},label={lst:goalqueue},language=Python]
 class GoalQueue:
     def __init__(self, size, threshold):
@@ -183,7 +183,7 @@ class GoalQueue:
         self.y_queue = np.zeros(self.MAX_SIZE+1)
 \end{lstlisting}
 
-\subsection*{update\_to\_go\_point Method}
+\subsection*{update\_to\_go\_point method}
 If the kobuki is in the state in which is waiting for the goal point, that method checks, through the help of the \texttt{GoalQueue} class, if a goal point has been provided. In that case it sets the goal point and clears the queue.
 \begin{lstlisting}[caption={Update To Go Point},label={lst:updatetogopoint},language=Python]
 def update_to_go_point(self, msg):
@@ -222,7 +222,7 @@ def update_to_go_point(self, msg):
             self.state = 'trajectory_acquired'
             self.goal_queue.clear()
 \end{lstlisting}
-\subsection*{button\_cb Method}
+\subsection*{button\_cb method}
 Callback method to check if the button on the Metawear IMU device has been pressed. Since pressing the button once will produce more than one \texttt{True} message, we make ourselves sure to consider only the first.
 \begin{lstlisting}[caption={Button Callback},label={lst:buttoncb},language=Python]
 def button_cb(self, msg):
@@ -231,7 +231,7 @@ def button_cb(self, msg):
     self.last_button = msg.data
 \end{lstlisting}
 
-\subsection*{run Method}
+\subsection*{run method}
 Method that runs the interaction for the kobuki go to goal demo. Each step is triggered with the wrist IMU button and confirmed with an audio feedback. When the goal point is set, it set the state of the \texttt{tf\_broadcaster} node to make the laser mark the goal point.
 \begin{lstlisting}[caption={Run Kobuki Go To Goal},label={lst:runkgtg},language=Python]
 def run(self):
