@@ -1,6 +1,6 @@
 \chapter{Hardware Implementation}
 \label{chap:2}
-In this chapter we describe the hardware implementation of the system. In particular, in section \ref{sec:turret12} and \ref{sec:turret64} we will focus on the two different laser turrets built, pointing out all the issues and differences that make the second one better. We also mention the arm IMU device and the groud robot used for reconstruct human pointing and build our demos respectively.
+In this chapter we describe the hardware implementation of the system. In particular, in section \ref{sec:turret12} and \ref{sec:turret64} we will focus on the two different laser turrets built, pointing out all the issues and differences that make the second one better. We also mention the arm \ac{IMU} device and the groud robot used to reconstruct human pointing and build our demos respectively.
 \section{First Turret Model} \label{sec:turret12}
 Figures \ref{fig:model1Photo} shows the first turret. As we can better see in figure \ref{fig:model13D} and \ref{fig:model13DCap}, it follows the model already seen in chapter \ref{chap:1}. So, at the base we have one servo motor in charge to control the \emph{pan} angle. On its flange, a second motor is mounted with a plastic bracket on its own flange. The laser diode is then mounted in the middle of that bracket, in such a way that its direction passes through the middle of the servo shaft. So, the second servo directly controls the \emph{tilt} angle. 
 The \emph{Arduino Uno Board} and the \emph{Bioloid Bus Serial Interface} conclude our hardware list.
@@ -40,11 +40,11 @@ Those are the values that set the limitations for that turret, causing the issue
 	\label{fig:ax12+}
 \end{figure}
 \subsection{Issues}\label{subs:firstModel:issues}
-Here we will only report the issues raised by the motors. The final solution is explained in next chapter. All other attempts are mentioned in the appendix.
+Here we will only report the issues raised by the motors. The final solution is explained in next chapter. All other attempts are mentioned the appendix \ref{Appen:A}.
 \subsubsection{Servo Resolution and Slow Speed Limit}
-Even though a resolution of $0.29^{\circ}$ could seem pretty good, that value heavily limits the performance of the turret. As a matter of fact, in our system, the joint will be often asked to do very small movement and, thus, drawing tiny angles. Moreover, the motor is not able to move with too much low speed values. That issue becomes even bigger when the laser dot moves far from the turret: the angles become always more smaller. The result is that the performances of the turret can be good enough only on a small size space around the turret, but that is not certainly enough for our system.
+Even though a resolution of $0.29^{\circ}$ could seem pretty good, that value heavily limits the performance of the turret. As a matter of fact, in our system, the joint will be often asked to do very small movement and, thus, draw tiny angles. Moreover, the motor is not able to move with too much low speed values. That issue becomes even bigger when the laser dot moves far from the turret: the angles become always more smaller. The result is that the performances of the turret can be good enough only on a small sized space around the turret, but that is not certainly enough for our system.
 \subsubsection{Trajectory Smoothness}
-The performances degradation heavily impacts the smoothness of trajectory of the laser dot. Playing with servos internal parameters we could try to find the right trade-off between precision and smoothness, but since the relative localization is based on the laser positions and the user following those positions, then we can not sacrifice too much either precision or smoothness.
+The performances degradation heavily impacts smoothness of trajectory drawn with the laser dot. Playing with servos internal parameters we could try to find the right trade-off between precision and smoothness, but since the relative localization is based on the laser positions and the user following those positions, then we can not sacrifice too much either precision or smoothness.
 \subsubsection{Slow Communication Protocol}
 This is the main issue. It is only partially related with the communication speed of the motors. Of course, with a higher speed, we could afford to use a slower protocol. Anyway, solving that issue allows us to obtain the best from that turret, hitting its limits, but obtaining a system which could work well enough for our purposes. Since the solution is part of the software implementation, it will be presented in the next chapter.
 
@@ -75,7 +75,7 @@ We use a simple 5V red laser diode powered directly from an \emph{Arduino Uno Bo
 \end{minipage}
 \end{figure}
 \subsection{Structural Parts}
-Figures \ref{fig:axFrames} shows the plastic frames used to assemble the turret. Mounting instructions can be found in the appendix.
+Figures \ref{fig:axFrames} shows the plastic frames used to assemble the turret. Mounting instructions can be found in appendix \ref{Appen:A}.
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{img/axFrames-min.png}%
