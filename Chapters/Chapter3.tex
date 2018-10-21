@@ -26,6 +26,7 @@ The programming language used for development is Python 2.7.12.\\
 \subsection{\acf{ROS}}
 \ac{ROS} is a open-source\footnote{Main client libraries and tools are under the terms of the BSD license (\url{https://en.wikipedia.org/wiki/BSD_licenses}).} meta-operating system for robots \cite{ros}. \ac{ROS} is the industry and research standard framework for robotics and it is aimed to help software developers to  create robotic applications.\\
 
+\begin{displayquote}
 Its primary goal is to support code reuse in robotics research and development. \ac{ROS} is a distributed framework of processes (aka Nodes) that enables executables to be individually designed and loosely coupled at runtime. These processes can be grouped into Packages and Stacks, which can be easily shared and distributed. \ac{ROS} also supports a federated system of code Repositories that enable collaboration to be distributed as well. This design, from the filesystem level to the community level, enables independent decisions about development and implementation, but all can be brought together with \ac{ROS} infrastructure tools.\\
 At the lowest level, \ac{ROS} offers a message passing interface that provides inter-process communication and is commonly referred to as a middleware.
 The \ac{ROS} middleware provides these facilities \cite{ros:core-components}:
@@ -45,7 +46,8 @@ In addition to the core middleware components, \ac{ROS} provides common robot-sp
     \item Mapping
     \item Navigation
 \end{itemize}
-in particular, the \emph{Robot Geometry Library} is widely used for that project.
+\end{displayquote}
+in particular, the \texttt{Robot Geometry Library} is widely used for that project.
 \subsubsection*{Robot Geometry Library: tf}
 A common challenge in many robotics projects is keeping track of where different parts of the robot are with respect to each other. For example, if one wants to combine data from a camera with data from a laser, he needs to know where each sensor is, in some common frame of reference. This issue is especially important for humanoid robots with many moving parts. This problem is addressed in \ac{ROS} with the \texttt{tf} (transform) library, which will keep track of where everything is in the robot system.
 
@@ -177,11 +179,11 @@ In both cases, all we have to do is compute transformation between human and tur
 \end{figure}
 \subsection{Kobuki Go to Goal Demo}\label{subs:kobukiGoToGoal}
 That demo exploits the kobuki platform to show an interesting use case for the system: mobile robot navigation. In that case, we do the \ac{relloc} and then tell the kobuki to reach a certain position by pointing at it for three seconds.\\
-In addition to the \ac{relloc} system, we implemented a basic \acs{PID} controller to move the kobuki. The library to interface with the robot is available online \cite{kobuki:ROS}. That simple controller, contained in the \textbf{kobuki\_go\_to\_goal} module, is very important as, while it computes the velocity command to move the kobuki, it also computes the new goal for the turret, in order to keep pointing the destination while the robot is moving, leveraging on its own odometry. Figure \ref{fig:goToGoalDemo} tries to explain that.\\ 
+In addition to the \ac{relloc} system, we implemented a basic \acs{PID} controller to move the kobuki. The library to interface with the robot is available online \cite{kobuki:ROS}. That simple controller, contained in the \textbf{kobuki\_go\_to\_goal} module, has multiple roles as, while it computes the velocity command to move the kobuki, it also computes the new goal for the turret, in order to keep pointing the destination while the robot is moving, leveraging on its own odometry. Figure \ref{fig:goToGoalDemo} tries to explain that.\\ 
 To detect the fact that the user is pointing the same point for three seconds, we implemented a nice function with a fixed size queue where we store the coordinates of the last 150 laser points (which means points in the last $3$ seconds at $50Hz$). We check if the average distance of each point from the first point in the queue is within a given threshold: in that case we detect the 3 seconds pointing. All that additional code is contained in the \textbf{kobuki\_go\_to\_goal} module, which interfaces flawlessly with our system.
 \begin{figure}
 	\centering
-	\includegraphics[width=\textwidth]{img/kgtgSW.png}%
+	\includegraphics[width=.9\textwidth]{img/kgtgSW.png}%
 	\caption{Kobuki Go to Goal Demo}
 	\label{fig:goToGoalDemo}
 \end{figure}
@@ -191,7 +193,7 @@ To mark the begin of the trajectory, the user points the start point for three s
 The three second pointing detection code is the same explained in \ref{subs:kobukiGoToGoal}. Moreover, we added code to sample the trajectory point list based on distance: that means that the actual trajectory followed by the kobuki is composed of points which are at a threshold distance from their predecessor. With a threshold of $0$, we use all points.
 \begin{figure}
 	\centering
-	\includegraphics[width=\textwidth]{img/followTrajectorySW.png}%
-	\caption{Kobuki Follow Trajecotry Demo}
+	\includegraphics[width=.9\textwidth]{img/followTrajectorySW.png}%
+	\caption{Kobuki Follow Trajectory Demo}
 	\label{fig:followTrajectoryDemo}
 \end{figure}

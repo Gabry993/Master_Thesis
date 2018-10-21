@@ -8,7 +8,7 @@ In this chapter we describe the abstract models used to shape all the three part
 \end{itemize}
 \section{Turret Model}
 \label{sec:1.1}
-\ac{DoF} is the number of independent parameters that define the configuration of a mechanical system. In that thesis, we present a two \ac{DoF} Pan \& Tilt turret. That means that our parameters are two angles. In a 3D reference system, \textbf{pan} is the horizontal angle about the upright Z axis, \textbf{tilt} is the vertical angle about the rotated Y axis, as in figure \ref{fig:panTilt}.
+\ac{DoF} is the number of independent parameters that define the configuration of a mechanical system. In that thesis, we present a two \ac{DoF} Pan \& Tilt turret. That means that our parameters are two angles. In a 3D reference system, \textbf{pan} is the horizontal angle about the upright \emph{z}-axis, \textbf{tilt} is the vertical angle about the rotated \emph{y}-axis, as in figure \ref{fig:panTilt}.
 Our final goal is to be able to define the direction of a laser ray mounted on top of the turret, so that we can control the position of the projected laser dot on a given surface, by solving the system's inverse kinematics.\\
 \begin{figure}
 	\centering
@@ -20,23 +20,23 @@ For those purposes, we have built two different turrets. Since the model of the 
 
 \subsection{First Model}\label{subs:firstModel}
 First, figures \ref{fig:firstModelRefFrame} helps to understand how the model is shaped to match the physical structure of the turret. We have three reference frames. The \textbf{base\_frame} is fixed and is the one in which we define the coordinates of the projected point. \textbf{pan\_frame} and \textbf{tilt\_frame} are the frames used to represent our revolute joints.
-\textbf{H} is the height of the turret, which is known. Note that the convention used for the frame is the following:
+\textbf{H} is the distance which goes from the \textbf{pan\_frame} to the \textbf{tilt\_frame}, which is known. Note that the convention used for the frame is the following:
 \begin{itemize}
-    \item red is the x axis;
-    \item green is the y axis;
-    \item blue is the z axis.
+    \item red is the \emph{x}-axis;
+    \item green is the \emph{y}-axis;
+    \item blue is the \emph{z}-axis.
 \end{itemize}
-Thus, we consider the laser ray to be a prolongation of the x axis of the \textbf{tilt\_frame}. \\
+Thus, we consider the laser ray to be a prolongation of the \emph{x}-axis of the \textbf{tilt\_frame}. \\
 Figure \ref{fig:firstModelPanTilt} shows what we want to be able to do: given the \textit{x}, \textit{y} and \textit{z} of the laser point we want to set \textbf{pan} and \textbf{tilt} angles accordingly. In order to do so, firstly we will solve the forward kinematics, then the inverse will be easily derived.
 \subsubsection{Forward Kinematics}
 The forward kinematics should take as input our parameters (i.e. \textbf{pan} and \textbf{tilt}) and then return the coordinates of the laser projected point into \textbf{base\_frame} reference. 
-Note that, since we are controlling the direction of an infinite ray, in order to obtain a unique (\textit{x, y, z}) triple, we must intersect such ray with a plane defined by the triple (\textit{0, 0, z}). In the forward kinematics equations this can be obtained by assuming that we know the \textit{z} of the point we want. Another option could be to assume that \textit{z} is zero, since we are considering the laser projection on the floor (i.e. on the \textbf{base\_frame}). \\
+Note that, since we are controlling the direction of an infinite ray, in order to obtain a unique (\textit{x, y, z}) triple, we must intersect such ray with a plane defined by the triple (\textit{0, 0, z}). In the forward kinematics equations this can be obtained by assuming that we know the \textit{z} of the point we want. Another option could be to assume that \textit{z} is zero, since we are considering the laser projection on the floor (i.e. on the \emph{xy}-plane of the \textbf{base\_frame}). \\
 As well as what is already defined in figure \ref{fig:firstModelPanTilt}, we must add:
 \begin{itemize}
     \item \textbf{L} as the distance from the \textbf{pan\_frame} origin to the projection of the laser point on the \textbf{base\_frame};
     \item \textbf{D} as the distance from the \textbf{tilt\_frame} origin to the laser point.
 \end{itemize}
-First, note that the \textbf{pan} angle does not depends on the \textit{z} coordinate, so, starting from:
+First, note that the \textbf{pan} angle does not depend on the \textit{z} coordinate, so, starting from:
 \begin{align}
 	D=& \frac{H-z}{\cos{(tilt)}} \label{eq:d}\\
 	L=& \sqrt{(H-z)^2 + D^2}
@@ -62,7 +62,7 @@ We can easily obtain laser point coordinates:
 \end{figure}
 \subsubsection{Inverse Kinematics}
 The inverse kinematics takes as input the triple (\textit{x, y, z}) of the laser point and returns the corresponding \textbf{pan} and \textbf{tilt} angles.\\
-In addition to \ref{eq:d}, we can say that:
+In addition to \ref{eq:d}, we can have that:
 \begin{align}
     H-z =& D\cos(tilt)\\
 	L =& D\sin(tilt) \label{eq:dsin}\\
@@ -83,7 +83,7 @@ Finally, thanks to equations \ref{eq:x} and \ref{eq:y} we can immediately obtain
 	\caption{Second Model, Reference Frames Explained}
 	\label{fig:secondModelRefFrame}
 \end{figure}
-The second model is slightly different from the first, as we can see in figure \ref{fig:secondModelRefFrame}. In that case, we have the laser ray which is perpendicular to the x axis of the \textbf{tilt\_frame}. One could think that to solve the inverse kinematics, adding 90 degrees to the tilt angle could be enough. However, since the ray origin does not coincide with the origin of the frame, this is wrong. Changing the tilt angle will not change only the direction of the ray, but also the position of its origin. This makes the kinematics a bit more complicated for that model.
+The second model is slightly different from the first, as we can see in figure \ref{fig:secondModelRefFrame}. In that case, we have the laser ray which is perpendicular to the \emph{x}-axis of the \textbf{tilt\_frame}. One could think that to solve the inverse kinematics, adding 90 degrees to the tilt angle could be enough. However, since the ray origin does not coincide with the origin of the frame, this is wrong. Changing the tilt angle will not change only the direction of the ray, but also the position of its origin. This makes the kinematics a bit more complicated for that model.
 \\
 Here we report only the inverse kinematics as it is the most interesting to understand. Note that the assumption made for the \textit{z} of the laser point in section \ref{subs:firstModel} still holds.
 \subsubsection{Inverse Kinematics}
@@ -123,7 +123,7 @@ Finally,
 \end{figure}
 The approach we follow to model human pointing is the one used in \cite{gromov2018robot}.\\
 The \emph{head-finger} model defines human pointing rays as originating at a centroid of the head and passing through the index fingertip. Figure \ref{fig:pointingModel} shows both the model and an explanation photo.\\
-The reference frame \textbf{human\_footprint} is located at the human feet with the \emph{x}-axis pointing forward, \emph{y}-axis to the left, and \emph{z}-axis pointing up. The pointing ray is a 3D half-line on which the point that the human intends to indicate lies. So, our goal is to intersect that line with the floor (i.e. the \emph{xy}-plane of \textbf{human\_footprint} frame) in order to get the point indicated by the user. To do so, we get pointing rays using orientation readings from a wearable \ac{IMU}. Once we have that, we can compute the intersection of those rays with the ground as a simple \emph{line-plane} intersection, as explained in \cite{O'Rourke:1998:CGC:289380}.
+The reference frame \textbf{human\_footprint} is located at the human feet with the \emph{x}-axis pointing forward, \emph{y}-axis to the left, and \emph{z}-axis pointing up. The pointing ray is a 3D half-line on which the point that the human intends to indicate lies. So, our goal is to intersect that line with the floor (i.e. the \emph{xy}-plane of \textbf{human\_footprint} frame) in order to get the point indicated by the user. To do so, we get pointing rays using orientation readings from a wearable \ac{IMU}. Once we have that, we can compute the intersection of those rays with the ground as a simple \emph{line-plane} intersection, as explained in \cite{interesection}. For convenience, we report here the relevant parts.
 
 Consider a line \textbf{L} given by its parametric equation:
 \begin{align}
@@ -138,11 +138,18 @@ Solving \ref{eq:dot} we obtain the intersect point $P(s_I)$:
 \begin{align}\label{eq:intersection}
 	s_I = \frac{\textbf{-n}\cdot\textbf{w}}{\textbf{n}\cdot\textbf{u}}=\frac{\textbf{n}\cdot(V_0-P_0)}{\textbf{n}\cdot(P_1-P_0)}=\frac{-(ax_0+by_0+cz_0+d)}{\textbf{n}\cdot\textbf{u}}
 \end{align}
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/line-plane.png}%
+	\caption[Line Plane Intersection]{Line Plane Intersection. Image taken from \cite{interesection}}
+	\label{fig:lineplane}
+\end{figure}
+Figure \ref{fig:lineplane} gives a visual representation.
 \section{Relative Localization} \label{sec:relloc}
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{img/pointingRelloc.png}%
-	\caption[Relloc Model]{\emph{Left}, Phase 1: the operator points at the laser he wants to interact with; an explicit (button press) event triggers the beginning of the interaction. \emph{Center}, Phase 2: the laser dot starts moving along a paths, and the human keeps pointing at it; the system acquires a set of pairs each composed by: a pointing ray \emph{r} in the operator’s frame of reference $\{H\}$; a point $P$ in the turret’s fixed base frame $\{B\}$. \emph{Right}: after a few seconds the system has reconstructed the transformation $T^*$ linking $\{H\}$ and $\{B\}$: pointing rays can be known in the turret frame, and the interaction can continue in an application-dependent way.}
+	\caption[Relloc Model]{\emph{Left}, Phase 1: the operator points at the laser he wants to interact with; an explicit (button press) event triggers the beginning of the interaction. \emph{Center}, Phase 2: the laser dot starts moving along a path, and the human keeps pointing at it; the system acquires a set of pairs each composed by: a pointing ray \emph{r} in the operator’s frame of reference $\{H\}$; a point $P$ in the turret’s fixed base frame $\{B\}$. \emph{Right}: after a few seconds the system has reconstructed the transformation $T^*$ linking $\{H\}$ and $\{B\}$: pointing rays can be known in the turret frame, and the interaction can continue in an application-dependent way.}
 	\label{fig:rellocExplained}
 \end{figure}
 The relative localization procedure goal is to estimate the pose (position and orientation) of the turret's frame in the reference frame of the human. The approach we use is the one proposed in \cite{gromov2018robot}.\\
