@@ -1,4 +1,4 @@
-\chapter{Interesting Stuff}
+\chapter{}
 \label{Appen:A}
 In that appendix we discuss a couple of things that for different reasons are only mentioned in the main document, but can still be interesting.
 \section{Motor Issues: Solution Attempts}
@@ -8,7 +8,7 @@ As we discussed in \ref{subs:firstModel:issues}, we had to face many issues with
 \paragraph{PID Controller:} again using wheel mode, we tried to build a PID controller, but since the communication with the turret was very slow, that did not improve things;
 \paragraph{PID, Joint Mode:} we even tried a PID controller in joint mode, though it did not make much sense;
 \paragraph{Compliance Slope and Margin:} those servos have two internal parameters. \emph{Compliance} is to set the control flexibility of the motor.
-Diagram in figure \ref{fig:compliance} shows the relationship between output torque and position of the motor. \emph{Compliance Margin} exists in each direction of CW/CCW and means the error between goal position and present position. The greater the value, the more difference occurs. \emph{Compliance Slope} sets the level of Torque near the goal position, the higher the value, the more flexibility is obtained.
+Diagram in figure \ref{fig:compliance} shows the relationship between output torque and position of the motor. \emph{Compliance Margin} exists in each direction of \acs{CW}/\acs{CCW} and means the error between goal position and present position. The greater the value, the more difference occurs. \emph{Compliance Slope} sets the level of Torque near the goal position, the higher the value, the more flexibility is obtained.
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{img/compliance.png}%
@@ -18,8 +18,8 @@ Diagram in figure \ref{fig:compliance} shows the relationship between output tor
 Changing those values allowed us to obtain smoother trajectories, but sacrificing precision which, at the earlier stage was not important and not visible, but it could not be tolerate when implementing the relative localization system, as being imprecise with the laser pointer directly affects system performances.
 
 
-\section{Motor Frames Mounting Instruction}
-For sake of completeness, we include the instruction followed to mount the motors together.
+\section{Motor Frames Mounting Instructions}
+For sake of completeness, we include the instructions followed to mount the motors together.
 
 Figure \ref{fig:axMounting2} shows how the \texttt{F3} is used to attach two dynamixels AX-12 together. In that way, we implement our pan component, since the bottom motor (the one on the left in the picture) can rotate the base of the upper one. Figure \ref{fig:s101Mounting} shows how the same thing can be obtained with two MX-64 servos and a \texttt{SR05-H101} frame.
 \begin{figure}
@@ -69,7 +69,7 @@ Here are the main topics extracted for each experiment:
 \textbf{relloc experiment}:
 \begin{itemize}
     \item \texttt{relloc\_human\_pose}, containing estimated 3D points of the human in the turret frame, computed and published for application purposes;
-    \item \texttt{gt\_point}, containing 3D ground truth points, i.e. the points where the user should stand when doing the relloc. We need to publish since they are randomly shuffled for each user, thus we can not assume that we already know them.
+    \item \texttt{gt\_point}, containing 3D ground truth points, i.e. the points where the user should stand when doing the relloc. We need to publish since they are randomly shuffled for each user, thus we cannot assume that we already know them.
 \end{itemize}
 Given that, is easy to understand how we obtain the results discussed in chapter \ref{chap:4}. For the pointing experiment, we confront \texttt{arm\_pointer} points with \texttt{laser\_point} ones, considering also their distances from the targets for each session. For the relloc one, for each session we compute the distance between the ground truth point and the estimated one.
 

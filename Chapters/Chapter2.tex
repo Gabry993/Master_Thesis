@@ -24,13 +24,15 @@ The \emph{Arduino Uno Board} and the \emph{Bioloid Bus Serial Interface} conclud
 	\label{fig:model13DCap}
 \end{figure}
 \subsection{Dynamixel AX-12+}
-As reported on the official website \cite{web-AX-12}:\\ \virgolette{\emph{the DYNAMIXEL is a smart actuator system developed to be the exclusive connecting joints on a robot or mechanical structure. DYNAMIXELS’ are designed to be modular and daisy chained on any robot or mechanical design for powerful and flexible robotic movements. The DYNAMIXEL is a high performance actuator with a fully integrated DC (Direct Current) Motor + Reduction Gearhead + Controller + Driver + Network, all in one servo module actuator. Programmable and networkable, actuator status can be read and monitored through a data packet stream.}}\\
+As reported on the official website \cite{web-AX-12}:\begin{displayquote}
+the DYNAMIXEL is a smart actuator system developed to be the exclusive connecting joints on a robot or mechanical structure. DYNAMIXELS’ are designed to be modular and daisy chained on any robot or mechanical design for powerful and flexible robotic movements. The DYNAMIXEL is a high performance actuator with a fully integrated DC (Direct Current) Motor + Reduction Gearhead + Controller + Driver + Network, all in one servo module actuator. Programmable and networkable, actuator status can be read and monitored through a data packet stream.
+\end{displayquote}
 The first turret is composed of two \textbf{Dynamixel AX-12+} motors.
 \subsection{Motor Specification}
 The full datasheet can be found here \cite{datasheet-AX-12}. We are mostly interested in two specifications: 
 \begin{itemize}
     \item \textbf{Resolution}: $0.29^{\circ}$;
-    \item \textbf{Communication speed}: 7343 bps $\sim$ 1 Mbps.
+    \item \textbf{Communication speed}: between 7343 bps and 1 Mbps.
 \end{itemize}
 Those are the values that set the limitations for that turret, causing the issues we discuss in the next section.
 \begin{figure}
@@ -40,17 +42,17 @@ Those are the values that set the limitations for that turret, causing the issue
 	\label{fig:ax12+}
 \end{figure}
 \subsection{Issues}\label{subs:firstModel:issues}
-Here we will only report the issues raised by the motors. The final solution is explained in next chapter. All other attempts are mentioned the appendix \ref{Appen:A}.
+Here we will only report the issues raised by the motors. The final solution is explained in next chapter. All other attempts are mentioned in appendix \ref{Appen:A}.
 \subsubsection{Servo Resolution and Slow Speed Limit}
 Even though a resolution of $0.29^{\circ}$ could seem pretty good, that value heavily limits the performance of the turret. As a matter of fact, in our system, the joint will be often asked to do very small movement and, thus, draw tiny angles. Moreover, the motor is not able to move with too much low speed values. That issue becomes even bigger when the laser dot moves far from the turret: the angles become always more smaller. The result is that the performances of the turret can be good enough only on a small sized space around the turret, but that is not certainly enough for our system.
 \subsubsection{Trajectory Smoothness}
-The performances degradation heavily impacts smoothness of trajectory drawn with the laser dot. Playing with servos internal parameters we could try to find the right trade-off between precision and smoothness, but since the relative localization is based on the laser positions and the user following those positions, then we can not sacrifice too much either precision or smoothness.
+The performances degradation heavily impacts smoothness of trajectory drawn with the laser dot. Playing with servos internal parameters we could try to find the right trade-off between precision and smoothness, but since the relative localization is based on the laser positions and the user following those positions, then we cannot sacrifice too much either precision or smoothness.
 \subsubsection{Slow Communication Protocol}
 This is the main issue. It is only partially related with the communication speed of the motors. Of course, with a higher speed, we could afford to use a slower protocol. Anyway, solving that issue allows us to obtain the best from that turret, hitting its limits, but obtaining a system which could work well enough for our purposes. Since the solution is part of the software implementation, it will be presented in the next chapter.
 
 \subsection{Bioloid Bus Interface}
 This board allows PC to communicate with Bioloid bus devices (e.g. Dynamixel AX-12) using a USB cable at speeds of up to 1.0 Mbps. In other words,
-this simple device provides serial communication between the PC and the motors. It is also needed to provide voltage to the motors. We can not use it to power up the laser as the output voltage is too high and there is no voltage regulator.
+this simple device provides serial communication between the PC and the motors. It is also needed to provide voltage to the motors. We cannot use it to power up the laser as the output voltage is too high and there is no voltage regulator.
 \begin{figure}
 	\centering
 	\includegraphics[width=.5\textwidth]{img/bioloid.png}%
@@ -104,9 +106,11 @@ Figures \ref{fig:axFrames} shows the plastic frames used to assemble the turret.
 \end{figure}
 As already mentioned, we are going to present a second and more powerful turret. Looking at figure \ref{fig:model2Photo}, \ref{fig:model23D} and \ref{fig:model23DCap} we can immediately see that there are some structural differences from the previous model, but those are already discussed in \ref{subs:secondModel}. Here, we want to discuss the new hardware, in particular motors and structural parts, which come from the ScorpionX MX-64 Robot Turret Kit by Interbotix \cite{MX64Turret}.
 \subsection{Dynamixel MX-64T}
-Quoting from \cite{web-MX64}:\\
-\virgolette{\textit{The MX-64T Dynamixel Robot Servo Actuator is the newest generation of Robotis Dynamixel actuator; equipped with an onboard 32bit 72mhz Cortex M3, a contact-less magnetic encoder with 4x the resolution over the AX/RX series, and up to 3mpbs using the new TTL 2.0 bus. Each servo has the ability to track its speed, temperature, shaft position, voltage, and load. As if this weren't enough, the newly implemented PID control algorithm used to maintain shaft position can be adjusted individually for each servo, allowing you to control the speed and strength of the motor's response. All MX Series servos use 12v nominal voltage, so MX Dynamixels can be mixed without having to worry about separate power supplies. All of the sensor management and position control is handled by the servo's built-in microcontroller. This distributed approach leaves your main controller free to perform other functions.}}\\
-So, we already know that those motors are more powerful than the ones used for the first model. Moreover, they are also compatible. The result is that we can reuse the same software interface written for the first turret without any issues, obtaining a more reliable model in term of accuracy, precision and trajectory smoothness. That confirms that things are done right also with the first turret, but we are facing its physical/hardware limitations. The results with the new turret are considerably better even without directly exploiting and tuning the more sophisticated functions offered by the new motors, such as built-in PID controllers or faster communication.
+Quoting from \cite{web-MX64}:
+\begin{displayquote}
+The MX-64T Dynamixel Robot Servo Actuator is the newest generation of Robotis Dynamixel actuator; equipped with an onboard 32bit 72mhz Cortex M3, a contact-less magnetic encoder with 4x the resolution over the AX/RX series, and up to 3mpbs using the new TTL 2.0 bus. Each servo has the ability to track its speed, temperature, shaft position, voltage, and load. As if this weren't enough, the newly implemented PID control algorithm used to maintain shaft position can be adjusted individually for each servo, allowing you to control the speed and strength of the motor's response. All MX Series servos use 12v nominal voltage, so MX Dynamixels can be mixed without having to worry about separate power supplies. All of the sensor management and position control is handled by the servo's built-in microcontroller. This distributed approach leaves your main controller free to perform other functions.
+\end{displayquote}
+So, we already know that those motors are more powerful than the ones used for the first model. Moreover, they are also compatible. The result is that we can reuse the same software interface written for the first turret without any issues, obtaining a more reliable model in term of accuracy, precision and trajectory smoothness. That confirms that things are done right also with the first turret, but we are facing its physical/hardware limitations. The results with the new turret are considerably better even without directly exploiting and tuning the more sophisticated functions offered by the new motors, such as built-in \ac{PID} controllers or faster communication.
 \subsection{Motor Specification}
 \begin{figure}
 	\centering
@@ -117,7 +121,7 @@ So, we already know that those motors are more powerful than the ones used for t
 From the full datasheet \cite{datasheet-MX64} we report only two important specifications:
 \begin{itemize}
     \item \textbf{Resolution}: $0.088^{\circ}$;
-    \item \textbf{Communication Speed}: 8000 bps $\sim$ 4.5 Mbps.
+    \item \textbf{Communication Speed}: between 8000 bps and 4.5 Mbps.
 \end{itemize}
 As we can see, the resolution of those servos is roughly 3 times better than the Dynamixel AX-12. This is enough to make the new turret perform perfectly for our needs using exactly the same approach we use to solve the issues explained in \ref{subs:firstModel:issues}
 \subsection{Other Components}
@@ -130,7 +134,11 @@ The structural parts are provided together with the ScorpionX MX-64 Robot Turret
 	\label{fig:mx64Pieces}
 \end{figure}
 \section{Arm IMU}
-As explained in \ref{sec:1.2}, we need an arm IMU device to reconstruct the direction of human pointing. First, we present the Myo Armband, \virgolette{\textit{a gesture recognition device worn on the forearm and manufactured by Thalmic Labs. The Myo enables the user to control technology wirelessly using various hand motions. It uses a set of electromyographic (EMG) sensors that sense electrical activity in the forearm muscles, combined with a gyroscope, accelerometer and magnetometer to recognize gestures.}}. Obviously, we are interested only into the functions provided by gyroscope, accelerometer and magnetometer. We used such an expensive and mostly unnecessary device because it was what we already had.\\ However, our later work is based on a cheaper and more suitable device, the MetaMotionR board by Mbientlab, which can be mounted on a wrist band and provides a 9-axis IMU with Sensor Fusion. This is more convenient for our purposes, as it is easier to setup (it has a bluetooth driver for linux), more comfortable to wear (it is just like a watch) and also provides a LED for colour feedback and a small button (both are useful for our experiments and demos).
+As explained in \ref{sec:1.2}, we need an arm IMU device to reconstruct the direction of human pointing. First, we present the Myo Armband:
+\begin{displayquote}
+a gesture recognition device worn on the forearm, manufactured by Thalmic Labs. The Myo enables the user to control technology wirelessly using various hand motions. It uses a set of electromyographic (EMG) sensors that sense electrical activity in the forearm muscles, combined with a gyroscope, accelerometer and magnetometer to recognize gestures.
+\end{displayquote}
+Obviously, we are interested only into the functions provided by gyroscope, accelerometer and magnetometer. We used such an expensive and mostly unnecessary device because it was what we already had.\\ However, our later work is based on a cheaper and more suitable device, the MetaMotionR board by Mbientlab, which can be mounted on a wrist band and provides a 9-axis IMU with Sensor Fusion. This is more convenient for our purposes, as it is easier to setup (it has a bluetooth driver for linux), more comfortable to wear (it is just like a watch) and also provides a LED for colour feedback and a small button (both are useful for our experiments and demos).
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{img/IMUS.png}%
@@ -138,7 +146,9 @@ As explained in \ref{sec:1.2}, we need an arm IMU device to reconstruct the dire
 	\label{fig:IMUS}
 \end{figure}
 \section{Kobuki}
-\virgolette{\textit{iClebo Kobuki is a low-cost mobile research base designed for education and research on state of art robotics. With continuous operation in mind, Kobuki provides power supplies for an external computer as well as additional sensors and actuators. Its highly accurate odometry, amended by our factory calibrated gyroscope, enables precise navigation.}} \cite{kobuki}.\\
+\begin{displayquote}
+iClebo Kobuki is a low-cost mobile research base designed for education and research on state of art robotics. With continuous operation in mind, Kobuki provides power supplies for an external computer as well as additional sensors and actuators. Its highly accurate odometry, amended by our factory calibrated gyroscope, enables precise navigation \cite{kobuki}.
+\end{displayquote}
 As already stated, one of the main application of our system is ground robot navigation. We developed a couple of demo using the \emph{Kobuki}, a groud robot suitable for our purposes. Note that we actually use a \emph{TurtleBot2}, but only its structure (i.e. \emph{Kobuki} base plus mounting platform). For example, we do not exploit the \emph{kinect} camera provided with the \emph{Turtlebot2}. Its structure is perfectly suitable to mount our turret on top of it (figure \ref{fig:kobukiTurret}) and thus demonstrate our system.
 \begin{figure}
 	\centering
